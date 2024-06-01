@@ -1,14 +1,22 @@
 FLAGS = -Wall -Wextra -Werror
-MLXFLAGS = -Lminilibx-linux -lmlx -lX11 -lXext -lm
 SRC = main.c
-NAME = prog
-			
-
+NAME = miniRT
 OBJ = $(SRC:.c=.o)
+
+UNAME_S := $(shell uname -s)
+
+ifeq ($(UNAME_S), Linux)
+    OS_FLAGS = -Lminilibx-linux -lmlx -lX11 -lXext -lm
+else ifeq ($(UNAME_S), Darwin)
+    OS_FLAGS = -lmlx -framework OpenGL -framework AppKit
+else
+    $(error Unsupported operating system)
+endif
+
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	@cc $(FLAGS) $(OBJ) $(MLXFLAGS) -o $(NAME) -lreadline
+	@cc $(FLAGS) $(OBJ) $(OS_FLAGS) -o $(NAME)
 
 %.o: %.c
 	@cc $(FLAGS) -c $< -o $@
