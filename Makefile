@@ -1,5 +1,5 @@
-FLAGS = -Wall -Wextra -Werror
-SRC = main.c
+FLAGS = -g
+SRC = main.c utils/keys.c
 NAME = miniRT
 OBJ = $(SRC:.c=.o)
 
