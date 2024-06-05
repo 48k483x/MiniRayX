@@ -58,6 +58,7 @@
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "files.associations": {
     "*.embeddedhtml": "html",
-    "minirt.h": "c"
+    "minirt.h": "c",
+    "raytracer.h": "c"
   }
 }

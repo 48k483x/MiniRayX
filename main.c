@@ -1,113 +1,123 @@
 #include "miniRT.h"
 
-double	dot3(vec3 *a, vec3 *b)
-{
-	return (a->x * b->x + a->y * b->y + a->z * b->z);
+void put_pixel(MLX *mlx, int x, int y, int color) {
+    int index = (x * mlx->bpp / 8) + (y * mlx->size_line);
+    mlx->data[index] = color;
+    mlx->data[index + 1] = color >> 8;
+    mlx->data[index + 2] = color >> 16;
 }
 
-float	norm3(vec3 *a)
-{
-	return (sqrtf(dot3(a, a)));
+int get_color(Vec3 color) {
+    int r = fmin(255, color.x * 255);
+    int g = fmin(255, color.y * 255);
+    int b = fmin(255, color.z * 255);
+    return (r << 16) | (g << 8) | b;
 }
 
-double normalize(vec3 *a)
-{
-    float len;
+void draw_scene(MLX *mlx, Sphere sphere, Light light, Camera camera) {
+    float aspect_ratio = (float)mlx->width / (float)mlx->height;
+    float scale = tan(FOV * 0.5 * M_PI / 180);
 
-    len = norm3(a);
-    a->x /= len;
-    a->y /= len;
-    a->z /= len;
+    for (int y = 0; y < mlx->height; ++y) {
+        for (int x = 0; x < mlx->width; ++x) {
+            float px = (2 * (x + 0.5) / (float)mlx->width - 1) * aspect_ratio * scale;
+            float py = (1 - 2 * (y + 0.5) / (float)mlx->height) * scale;
 
-}
-
-int vec4_color(vec4 color) {
-    // Ensure color values are in the range [0, 255]
-    int r = (int)(color.r * 255.0f);
-    int g = (int)(color.g * 255.0f);
-    int b = (int)(color.b * 255.0f);
-    int a = (int)(color.a * 255.0f);
-    return (a << 24 | r << 16 | g << 8 | b);
-}
-
-double clamp(double x, double lowerlimit, double upperlimit) {
-    if (x < lowerlimit) 
-        x = lowerlimit;
-    if (x > upperlimit) 
-        x = upperlimit;
-    return x;
-}
-
-double smoothstep(double edge0, double edge1, double x) {
-    x = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0); 
-    return x * x * (3 - 2 * x);
-}
-
-int main() {
-    void *mlx;
-    void *win;
-    vec3 rayOrigin = {0.0f, 0.0f, 1.0f};
-    vec3 rayDirection;
-    float radius = 0.5f;
-    
-    mlx = mlx_init();
-    win = mlx_new_window(mlx, 800, 600, "3D Sphere");
-
-    // Calculate aspect ratio
-    float aspectRatio = 800.0f / 600.0f;
-
-    for (int i = 0; i < 800; i++) {
-        for (int j = 0; j < 600; j++) {
-            // Calculate ray direction based on pixel coordinates and aspect ratio
-            double ncdx = (i + 0.5) / 800 * 2 - 1;
-            double ncdy = (j + 0.5) / 600 * 2 - 1;
-            ncdy /= aspectRatio;
-
-            rayDirection = (vec3){ncdx, ncdy, -1.0f}; // Adjust the z-coordinate for perspective
-
-            normalize(&rayDirection);
-
-            double a = dot3(&rayDirection, &rayDirection);
-            double b = 2.0f * dot3(&rayDirection, &rayOrigin);
-            double c = dot3(&rayOrigin, &rayOrigin) - radius * radius;
-            double discriminant = b * b - 4 * a * c;
-
-            if (discriminant >= 0) {
-                double t1 = (-b + sqrtf(discriminant)) / (2 * a);
-                double closestT = (-b - sqrtf(discriminant)) / (2 * a);
-
-                // Calculate the hit point
-                vec3 hitpoint = {
-                    rayOrigin.x + closestT * rayDirection.x,
-                    rayOrigin.y + closestT * rayDirection.y,
-                    rayOrigin.z + closestT * rayDirection.z
-                };
-
-                vec3 normal = {hitpoint.x - rayOrigin.x, hitpoint.y - rayOrigin.y, hitpoint.z - rayOrigin.z};                
-                normalize(&normal);
-
-                vec3 lightDir = {-1, -1, -1};
-                normalize(&lightDir);
-                vec3 minusLIGHT= {-lightDir.x, -lightDir.y, -lightDir.z};
-                // normalize(&minusLIGHT);
-                float d = fmax(dot3(&normal, &lightDir), 0.0f);
-                d = smoothstep(0.25f, 1.0f, d);
-                // d = fmin(d, 1.0f);
-                printf("d = %f\n", d);
-                // vec4 color = {(normal.x + 1.0) / 2.0, (normal.y + 1.0) / 2.0, (normal.z + 1.0) / 2.0, 1.0f};			
-                vec4 blue = {1, 0, 1, 1.0f};
-                vec4 color = {blue.r * d, blue.g * d, blue.b * d, 1.0};
-                mlx_pixel_put(mlx, win, i, j, vec4_color(color));
-            } 
-            else {
-                vec4 black = {0.0f, 0.0f, 0.0f, 1.0f};
-                mlx_pixel_put(mlx, win, i, j, vec4_color(black));
+            Vec3 ray_dir = vec3_normalize((Vec3){
+                px * camera.right.x + py * camera.up.x + camera.forward.x,
+                px * camera.right.y + py * camera.up.y + camera.forward.y,
+                px * camera.right.z + py * camera.up.z + camera.forward.z
+            });
+            Ray ray = {camera.pos, ray_dir};
+            float t;
+            if (ray_intersect_sphere(ray, sphere, &t)) {
+                Vec3 point = vec3_add(ray.origin, vec3_scale(ray.direction, t));
+                Vec3 normal = vec3_normalize(vec3_sub(point, sphere.center));
+                Vec3 view_dir = vec3_scale(ray.direction, -1);
+                Vec3 color = calculate_lighting(point, normal, view_dir, light, sphere);
+                put_pixel(mlx, x, y, get_color(color));
+            } else {
+                put_pixel(mlx, x, y, 0x000000);
             }
         }
     }
+}
 
-    mlx_key_hook(win, handle_key, NULL);
-    mlx_loop(mlx);
+int handle_keypress(int keycode, MLX *mlx) {
+    static Camera camera = {
+        .pos = {0, 0, 0},
+        .forward = {0, 0, -1},
+        .up = {0, 1, 0},
+        .right = {1, 0, 0}
+    };
+    const float move_speed = 0.1;
+    const float rotate_speed = 0.1;
+
+    if (keycode == 53) { // ESC key code for macOS
+        mlx_destroy_window(mlx->mlx, mlx->win);
+        exit(0);
+    } else if (keycode == W_KEY) { // W key
+        camera.pos = vec3_add(camera.pos, vec3_scale(camera.forward, move_speed));
+    } else if (keycode == S_KEY) { // S key
+        camera.pos = vec3_add(camera.pos, vec3_scale(camera.forward, -move_speed));
+    } else if (keycode == A_KEY) { // A key
+        camera.pos = vec3_add(camera.pos, vec3_scale(camera.right, -move_speed));
+    } else if (keycode == D_KEY) { // D key
+        camera.pos = vec3_add(camera.pos, vec3_scale(camera.right, move_speed));
+    } else if (keycode == UP) { // Up arrow key
+        camera.pos = vec3_add(camera.pos, vec3_scale(camera.up, move_speed));
+    } else if (keycode == DOWN) { // Down arrow key
+        camera.pos = vec3_add(camera.pos, vec3_scale(camera.up, -move_speed));
+    } else if (keycode == LEFT) { // Left arrow key
+        camera.forward = vec3_normalize(vec3_add(
+            vec3_scale(camera.forward, cos(rotate_speed)),
+            vec3_scale(camera.right, -sin(rotate_speed))
+        ));
+        camera.right = vec3_cross(camera.forward, camera.up);
+    } else if (keycode == RIGHT) { // Right arrow key
+        camera.forward = vec3_normalize(vec3_add(
+            vec3_scale(camera.forward, cos(rotate_speed)),
+            vec3_scale(camera.right, sin(rotate_speed))
+        ));
+        camera.right = vec3_cross(camera.forward, camera.up);
+    }
+
+    draw_scene(mlx, (Sphere){{0, 0, -5}, 1, {1, 0, 0}}, (Light){{5, 5, -5}, {1, 1, 1}, 0.9}, camera);
+    mlx_put_image_to_window(mlx->mlx, mlx->win, mlx->img, 0, 0);
+    return 0;
+}
+
+int handle_close(MLX *mlx) {
+    mlx_destroy_window(mlx->mlx, mlx->win);
+    exit(0);
+    return 0;
+}
+
+int main() {
+    MLX mlx;
+    mlx.mlx = mlx_init();
+    mlx.width = 800;
+    mlx.height = 600;
+    mlx.win = mlx_new_window(mlx.mlx, mlx.width, mlx.height, "Ray Tracer");
+    mlx.img = mlx_new_image(mlx.mlx, mlx.width, mlx.height);
+    mlx.data = mlx_get_data_addr(mlx.img, &mlx.bpp, &mlx.size_line, &mlx.endian);
+
+    Sphere sphere = {{0, 0, -5}, 1, {1, 0, 0}}; // Red sphere
+    Light light = {{5, 5, -5}, {1, 1, 1}, 0.9}; // Bright white light
+
+    Camera camera = {
+        .pos = {0, 0, 0},
+        .forward = {0, 0, -1},
+        .up = {0, 1, 0},
+        .right = {1, 0, 0}
+    };
+
+    draw_scene(&mlx, sphere, light, camera);
+
+    mlx_put_image_to_window(mlx.mlx, mlx.win, mlx.img, 0, 0);
+    mlx_hook(mlx.win, 2, 1L<<0, handle_keypress, &mlx); // Key press event
+    mlx_hook(mlx.win, 17, 0, handle_close, &mlx); // Window close event
+    mlx_loop(mlx.mlx);
 
     return 0;
 }

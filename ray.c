@@ -1,4 +1,4 @@
-#include "raytracer.h"
+#include "miniRT.h"
 
 int ray_intersect_sphere(Ray ray, Sphere sphere, float *t) {
     Vec3 oc = vec3_sub(ray.origin, sphere.center);

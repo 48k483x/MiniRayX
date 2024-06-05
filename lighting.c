@@ -1,4 +1,4 @@
-#include "raytracer.h"
+#include "miniRT.h"
 
 Vec3 calculate_lighting(Vec3 point, Vec3 normal, Vec3 view_dir, Light light, Sphere sphere) {
     Vec3 light_dir = vec3_normalize(vec3_sub(light.position, point));
