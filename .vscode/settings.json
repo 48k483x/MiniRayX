@@ -60,5 +60,6 @@
     "*.embeddedhtml": "html",
     "minirt.h": "c",
     "raytracer.h": "c"
-  }
+  },
+  "C_Cpp.errorSquiggles": "disabled"
 }
