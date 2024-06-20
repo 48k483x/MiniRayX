@@ -53,7 +53,7 @@ int handle_keypress(int keycode, MLX *mlx) {
     const float move_speed = 0.1;
     const float rotate_speed = 0.1;
 
-    if (keycode == 53) { // ESC key code for macOS
+    if (keycode == 53 || keycode == 65307) { // ESC key code for macOS
         mlx_destroy_window(mlx->mlx, mlx->win);
         exit(0);
     } else if (keycode == W_KEY) { // W key
