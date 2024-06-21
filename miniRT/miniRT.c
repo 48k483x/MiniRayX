@@ -1,17 +1,5 @@
 #include "srcs/include/miniRT.h"
 
-int	is_space(char *s)
-{
-	int i;
-
-	i = 0;
-	while (s[i] == ' ' || s[i] == '\t')
-		i++;
-	if (s[i] == '\0')
-		return (1);
-	return (0);
-}
-
 char	**add_to_map(char **scene, char *new_line)
 {
 	int		i;

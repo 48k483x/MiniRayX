@@ -1,5 +1,17 @@
 #include "../include/miniRT.h"
 
+int	is_space(char *s)
+{
+	int i;
+
+	i = 0;
+	while (s[i] == ' ' || s[i] == '\t')
+		i++;
+	if (s[i] == '\0')
+		return (1);
+	return (0);
+}
+
 void	*_memdel(void *ptr)
 {
 	if (ptr)

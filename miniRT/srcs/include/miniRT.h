@@ -49,6 +49,7 @@
 # define DIR_VECTOR		"direction vector components must range from -1 to 1"
 # define FOV_ERR		"FOV must range from 0 to 180"
 # define ST_ERR			"stars option can't be implemented"
+# define RADIUS			"radius and height must be positive"
 
 typedef struct s_vec3
 {
@@ -77,6 +78,29 @@ typedef struct s_light
 	int			color;//RGB color not used in mendatory part
 }				t_light;
 
+typedef struct s_sph
+{
+	t_vec3		origin;
+	double		diameter;
+	int			color;
+}				t_sph;
+
+typedef struct s_pla
+{
+	t_vec3		origin;
+	t_vec3		normal;
+	int			color;
+}				t_pla;
+
+typedef struct s_cyl
+{
+	t_vec3		origin;
+	t_vec3		normal;
+	double		diameter;
+	double		height;
+	int			color;
+}				t_cyl;
+
 typedef struct s_acl
 {
 	t_amb		amb;
@@ -95,12 +119,14 @@ void	*_memdel(void *ptr);
 int     _strlen(const char *str);
 char	*_strnstr(const char *big, const char *little, size_t len);
 float	_atof(char *str);
+int	is_space(char *s);
 
 // Library functions split.c
 char	**_split(char const *s, char c);
 void	free_tab(char **tab);
 
 // A, C, L Parsing and Filling
+int		get_color(t_vec3 color); // color to int hihi
 int		fill_amb(t_amb *amb, char *line);
 int		fill_cam(t_cam *cam, char *line);
 int		fill_light(t_light *light, char *line);
