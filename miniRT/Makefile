@@ -1,5 +1,9 @@
 FLAGS = -g
-SRC = main.c ray.c vector.c lighting.c
+
+SRC = miniRT.c \
+	gnl/gnl.c gnl/gnl_utils.c \
+	utils/libft.c utils/split.c
+
 NAME = miniRT
 OBJ = $(SRC:.c=.o)
 

@@ -1,11 +1,13 @@
 #ifndef MINIRT_H
 # define MINIRT_H
 
-#include "minilibx-linux/mlx.h"
+#include "../minilibx-linux/mlx.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
+#include <fcntl.h>
+#include "gnl/gnl.h"
 
 #ifdef __APPLE__
 	#define ESC_KEY 53
@@ -33,52 +35,44 @@
 	#error "Unsupported operating system"
 #endif
 
-// Vector structure
-typedef struct {
-    float x, y, z;
-} Vec3;
+# define DOTRT_ERR "Error\nThe scene file must have a .rt extension.\n"
+# define FDNM_ERR "Error\nOne of the normal map file cannot be access.\n"
 
-// Ray structure
-typedef struct {
-    Vec3 origin;
-    Vec3 direction;
-} Ray;
+# define SPACE_POINT 	"must have a point in space"
+# define INTENSITY		"intensity must range from 0 to 1"
+# define SMOOTHNESS		"smoothness must range from 0 to 1"
+# define COLOR			"rgb color components must range from 0 to 255"
+# define DIAMETER_ERR	"diameter must be positive"
+# define SIZE_ERR		"size must be positive"
+# define REFLECTION		"reflection arguments must range from 0 to 1"
+# define TEXTURE		"texture must be either checkers or a bump map"
+# define DIR_VECTOR		"direction vector components must range from -1 to 1"
+# define FOV_ERR		"FOV must range from 0 to 180"
+# define ST_ERR			"stars option can't be implemented"
 
-// Sphere structure
-typedef struct {
-    Vec3 center;
-    float radius;
-    Vec3 color;
-} Sphere;
+typedef struct s_vec3
+{
+	double		x;
+	double		y;
+	double		z;
+}				t_vec3;
 
-// Light structure
-typedef struct {
-    Vec3 position;
-    Vec3 color;
-    float intensity;
-} Light;
+typedef struct s_amb
+{
+	double		intensity;
+	int			color;
+}				t_amb;
 
-// Camera structure
-typedef struct {
-    Vec3 pos;
-    Vec3 forward;
-    Vec3 up;
-    Vec3 right;
-} Camera;
+// Structures Parsing
 
-// MLX structure
-typedef struct {
-    void *mlx;
-    void *win;
-    void *img;
-    char *data;
-    int bpp;
-    int size_line;
-    int endian;
-    int width;
-    int height;
-} MLX;
 
+// Library functions libft.c
+int     _strlen(const char *str);
+char	*_strnstr(const char *big, const char *little, size_t len);
+float	_atof(char *str);
+
+// Library functions split.c
+char	**_split(char const *s, char c);
 
 
 #endif
