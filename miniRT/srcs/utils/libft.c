@@ -1,4 +1,4 @@
-#include "../miniRT.h"
+#include "../include/miniRT.h"
 
 int	_strlen(const char *s)
 {

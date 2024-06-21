@@ -1,4 +1,4 @@
-#include "../miniRT.h"
+#include "../include/miniRT.h"
 
 int	count_strings(char const *s, char c)
 {

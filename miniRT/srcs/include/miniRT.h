@@ -1,13 +1,13 @@
 #ifndef MINIRT_H
 # define MINIRT_H
 
-#include "../minilibx-linux/mlx.h"
+#include "../../../minilibx-linux/mlx.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
 #include <fcntl.h>
-#include "gnl/gnl.h"
+#include "../gnl/gnl.h"
 
 #ifdef __APPLE__
 	#define ESC_KEY 53
@@ -70,8 +70,17 @@ typedef struct s_cam
 	double		fov;
 }				t_cam;
 
+typedef struct s_light
+{
+	t_vec3		origin;
+	double		intensity;
+	int			color;//RGB color not used in mendatory part
+}				t_light;
 // Structures Parsing
 
+// Library functions error.c
+int		error(const char *msg);
+int		_check_extension(char *filename);
 
 // Library functions libft.c
 int     _strlen(const char *str);
@@ -80,6 +89,11 @@ float	_atof(char *str);
 
 // Library functions split.c
 char	**_split(char const *s, char c);
+
+// A, C, L Parsing and Filling
+int		fill_amb(t_amb *amb, char *line);
+int		fill_cam(t_cam *cam, char *line);
+int		fill_light(t_light *light, char *line);
 
 
 #endif

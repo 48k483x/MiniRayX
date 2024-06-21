@@ -1,8 +1,10 @@
 FLAGS = -g
 
 SRC = miniRT.c \
-	gnl/gnl.c gnl/gnl_utils.c \
-	utils/libft.c utils/split.c
+	srcs/gnl/gnl.c srcs/gnl/gnl_utils.c \
+	srcs/utils/libft.c srcs/utils/split.c \
+	srcs/utils/error.c \
+	srcs/parsing/acl.c 
 
 NAME = miniRT
 OBJ = $(SRC:.c=.o)
