@@ -42,10 +42,9 @@ int	fill_amb(t_amb *amb, char *line)
 	int  color;
 	int i = 1;
 
-	line[_strlen(line) - 1] = '\0';
 	tab = _split(line, ' ');
 	if (_strlen(tab[0]) != 1 || tab[0][0] != 'A' || tab[0][1] != '\0')
-		return error("Error: Ambiant light must start with 'A '");
+		return error("Error: Ambiant light must start with 'A'");
 	colors = _split(tab[2], ',');
 	color = get_color((t_vec3){_atof(colors[0]), _atof(colors[1]), _atof(colors[2])});
 	if (color == -1)
@@ -55,6 +54,30 @@ int	fill_amb(t_amb *amb, char *line)
 	amb->intensity = _atof(tab[1]);
 	amb->color = color;
 	return 0;
+}
+
+int	fill_cam(t_cam *cam, char *line)
+{
+	char **tab;
+	char **origins;
+	char **nor;
+	int i = 1;
+
+	tab = _split(line, ' ');
+	if (_strlen(tab[0]) != 1 || tab[0][0] != 'C' || tab[0][1] != '\0')
+		return error("Error: Camera must start with 'C'");
+	origins = _split(tab[1], ',');
+	cam->origin = (t_vec3){_atof(tab[1]), _atof(tab[2]), _atof(tab[3])};
+	nor = _split(tab[2], ',');
+	if (_atof(nor[0]) < -1 || _atof(nor[0]) > 1 ||\
+		_atof(nor[1]) < -1 || _atof(nor[1]) > 1 ||\
+		_atof(nor[2]) < -1 || _atof(nor[2]) > 1)
+		return error(DIR_VECTOR);
+	cam->normal = (t_vec3){_atof(nor[0]), _atof(nor[1]), _atof(nor[2])};
+	if (_atof(tab[3]) < 0 || _atof(tab[3]) > 180)
+		return error(FOV_ERR);
+	cam->fov = _atof(tab[3]);
+	return (0);
 }
 
 int main(int ac, char *av[])
@@ -67,10 +90,17 @@ int main(int ac, char *av[])
 	if (fd < 0)
 		return error("Error: Can't open [scene_file]");
 	line = gnl(fd);
+	line[_strlen(line) - 1] = '\0';
 	t_amb amb;
 	fill_amb(&amb, line);
 	printf("intensity: %f\n", amb.intensity);
 	printf("color: %d\n", amb.color);
 	free(line);
-	printf("atof: %f\n", _atof("0.5"));	
+	line = gnl(fd);
+	line[_strlen(line) - 1] = '\0';
+	t_cam cam;
+	fill_cam(&cam, line);
+	printf("origin: %f %f %f\n", cam.origin.x, cam.origin.y, cam.origin.z);
+	printf("normal: %f %f %f\n", cam.normal.x, cam.normal.y, cam.normal.z);
+	printf("fov: %f\n", cam.fov);
 }

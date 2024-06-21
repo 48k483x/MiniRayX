@@ -63,6 +63,13 @@ typedef struct s_amb
 	int			color;
 }				t_amb;
 
+typedef struct s_cam
+{
+	t_vec3		origin;
+	t_vec3		normal;
+	double		fov;
+}				t_cam;
+
 // Structures Parsing
 
 
