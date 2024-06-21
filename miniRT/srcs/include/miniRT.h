@@ -76,6 +76,14 @@ typedef struct s_light
 	double		intensity;
 	int			color;//RGB color not used in mendatory part
 }				t_light;
+
+typedef struct s_acl
+{
+	t_amb		amb;
+	t_cam		cam;
+	t_light		light;
+}				t_acl;
+
 // Structures Parsing
 
 // Library functions error.c
@@ -83,12 +91,14 @@ int		error(const char *msg);
 int		_check_extension(char *filename);
 
 // Library functions libft.c
+void	*_memdel(void *ptr);
 int     _strlen(const char *str);
 char	*_strnstr(const char *big, const char *little, size_t len);
 float	_atof(char *str);
 
 // Library functions split.c
 char	**_split(char const *s, char c);
+void	free_tab(char **tab);
 
 // A, C, L Parsing and Filling
 int		fill_amb(t_amb *amb, char *line);

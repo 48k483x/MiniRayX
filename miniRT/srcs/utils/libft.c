@@ -1,5 +1,15 @@
 #include "../include/miniRT.h"
 
+void	*_memdel(void *ptr)
+{
+	if (ptr)
+	{
+		free(ptr);
+		ptr = NULL;
+	}
+	return (NULL);
+}
+
 int	_strlen(const char *s)
 {
 	int	i;

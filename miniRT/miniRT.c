@@ -1,31 +1,79 @@
 #include "srcs/include/miniRT.h"
 
+int	is_space(char *s)
+{
+	int i;
+
+	i = 0;
+	while (s[i] == ' ' || s[i] == '\t')
+		i++;
+	if (s[i] == '\0')
+		return (1);
+	return (0);
+}
+
+char	**add_to_map(char **scene, char *new_line)
+{
+	int		i;
+	int		size;
+	char	**new_map;
+
+	i = 0;
+	size = 0;
+	while (scene && scene[size])
+		size++;
+	new_map = malloc(sizeof(char *) * (size + 2));
+	if (!new_map)
+		return (NULL);
+	while (i < size)
+	{
+		new_map[i] = scene[i];
+		i++;
+	}
+	new_map[i] = new_line;
+	new_map[i + 1] = NULL;
+	free(scene);
+	return (new_map);
+}
+
+char **get_scene(char *filename)
+{
+	char 	*line;
+	char	**scene;
+	int		fd;
+
+	scene = NULL;
+	fd = open(filename, O_RDONLY);
+	if (fd == -1)
+		return (NULL);
+	line = gnl(fd);
+	while (line)
+	{
+		if (is_space(line))
+		{
+			free(line);
+			line = gnl(fd);
+			continue;
+		}
+		scene = add_to_map(scene, line);
+		line = gnl(fd);
+	}
+	close(fd);
+	return (scene);
+}
+
 int main(int ac, char *av[])
 {
+	t_acl 	acl;
+	char	**scene;
+
+	scene = NULL;
 	if (ac != 2 || !_check_extension(av[1]))
 		return error("Usage:./miniRT [scene_file]");
-	
-	char *line;
-	int fd = open(av[1], O_RDONLY);
-	if (fd < 0)
-		return error("Can't open [scene_file]");
-	line = gnl(fd);
-	t_amb amb;
-	fill_amb(&amb, line);
-	printf("intensity: %f\n", amb.intensity);
-	printf("color: %d\n", amb.color);
-	free(line);
-	line = gnl(fd);
-	t_cam cam;
-	fill_cam(&cam, line);
-	printf("origin: %f %f %f\n", cam.origin.x, cam.origin.y, cam.origin.z);
-	printf("normal: %f %f %f\n", cam.normal.x, cam.normal.y, cam.normal.z);
-	printf("fov: %f\n", cam.fov);
-	free(line);
-	line = gnl(fd);
-	t_light light;
-	fill_light(&light, line);
-	printf("origin: %f %f %f\n", light.origin.x, light.origin.y, light.origin.z);
-	printf("intensity: %f\n", light.intensity);
-	printf("color: %d\n", light.color);
+	scene = get_scene(av[1]);
+	if (scene == NULL)
+		return error("Can't read scene file");
+	for (int i = 0; scene[i]; i++)
+		printf("%s\n", scene[i]);
+	free_tab(scene);
 }

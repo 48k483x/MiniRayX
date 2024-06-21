@@ -1,5 +1,18 @@
 #include "../include/miniRT.h"
 
+void	free_tab(char **tab)
+{
+	int	i;
+
+	i = 0;
+	while (tab[i])
+	{
+		_memdel(tab[i]);
+		i++;
+	}
+	_memdel(tab);
+}
+
 int	count_strings(char const *s, char c)
 {
 	int	i;
