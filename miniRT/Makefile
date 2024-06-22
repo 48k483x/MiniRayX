@@ -4,7 +4,8 @@ SRC = miniRT.c \
 	srcs/gnl/gnl.c srcs/gnl/gnl_utils.c \
 	srcs/utils/libft.c srcs/utils/split.c \
 	srcs/utils/error.c \
-	srcs/parsing/acl.c 
+	srcs/parsing/print_scene.c \
+	srcs/parsing/acl.c srcs/parsing/select.c srcs/parsing/sp_pl_cy.c \
 
 NAME = miniRT
 OBJ = $(SRC:.c=.o)

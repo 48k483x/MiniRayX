@@ -42,7 +42,6 @@
 # define INTENSITY		"intensity must range from 0 to 1"
 # define SMOOTHNESS		"smoothness must range from 0 to 1"
 # define COLOR			"rgb color components must range from 0 to 255"
-# define DIAMETER_ERR	"diameter must be positive"
 # define SIZE_ERR		"size must be positive"
 # define REFLECTION		"reflection arguments must range from 0 to 1"
 # define TEXTURE		"texture must be either checkers or a bump map"
@@ -75,7 +74,7 @@ typedef struct s_light
 {
 	t_vec3		origin;
 	double		intensity;
-	int			color;//RGB color not used in mendatory part
+	int			color;// RGB color not used in mendatory part
 }				t_light;
 
 typedef struct s_sph
@@ -101,25 +100,50 @@ typedef struct s_cyl
 	int			color;
 }				t_cyl;
 
-typedef struct s_acl
+typedef struct s_sph_l
+{
+	t_sph		sph;
+	struct s_sph_l	*next;
+}				t_sph_l;
+
+typedef struct s_pla_l
+{
+	t_pla		pla;
+	struct s_pla_l	*next;
+}				t_pla_l;
+
+typedef struct s_cyl_l
+{
+	t_cyl		cyl;
+	struct s_cyl_l	*next;
+}				t_cyl_l;
+
+typedef struct s_scene
 {
 	t_amb		amb;
 	t_cam		cam;
 	t_light		light;
-}				t_acl;
+	t_sph_l		*sph;
+	t_pla_l		*pla;
+	t_cyl_l		*cyl;
+}				t_scene;
 
 // Structures Parsing
 
 // Library functions error.c
 int		error(const char *msg);
 int		_check_extension(char *filename);
+int    alc_num(char **tab);
 
 // Library functions libft.c
+void	*_malloc(size_t size);
 void	*_memdel(void *ptr);
 int     _strlen(const char *str);
 char	*_strnstr(const char *big, const char *little, size_t len);
 float	_atof(char *str);
 int	is_space(char *s);
+int	is_digit(char c);
+int	is_digitf(char *s);
 
 // Library functions split.c
 char	**_split(char const *s, char c);
@@ -127,9 +151,23 @@ void	free_tab(char **tab);
 
 // A, C, L Parsing and Filling
 int		get_color(t_vec3 color); // color to int hihi
+int		three_check(char **tab);
 int		fill_amb(t_amb *amb, char *line);
 int		fill_cam(t_cam *cam, char *line);
 int		fill_light(t_light *light, char *line);
+int		fill_sphere(t_sph *sph, char *line);
+int		fill_planet(t_pla *pla, char *line);
+int		fill_cylindre(t_cyl *cyl, char *line);
+
+// SP, PL, CY, A, C, L Printing
+void print_vec3(t_vec3 vec);
+void print_sphere_list(t_sph_l *sph);
+void print_plane_list(t_pla_l *pla);
+void print_cylinder_list(t_cyl_l *cyl);
+void print_scene(t_scene *scene);
+
+// SP, PL, CY Parsing and Filling and Select
+int    selecte(t_scene *scene, char **tab);
 
 
 #endif
