@@ -42,6 +42,8 @@ int	fill_amb(t_amb *amb, char *line)
 		return error(INTENSITY);
 	amb->intensity = _atof(tab[1]);
 	amb->color = color;
+	free_tab(colors);
+	free_tab(tab);
 	return (1);
 }
 
@@ -70,6 +72,9 @@ int	fill_cam(t_cam *cam, char *line)
 	if (!is_digitf(tab[3]) || (_atof(tab[3]) < 0 || _atof(tab[3]) > 180))
 		return error(FOV_ERR);
 	cam->fov = _atof(tab[3]);
+	free_tab(ori);
+	free_tab(nor);
+	free_tab(tab);
 	return (1);
 }
 
@@ -98,5 +103,8 @@ int	fill_light(t_light *light, char *line)
 	if (color == -1)
 		return error(COLOR);
 	light->color = color;
+	free_tab(ori);
+	free_tab(colors);
+	free_tab(tab);
 	return (1);
 }

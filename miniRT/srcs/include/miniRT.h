@@ -131,6 +131,7 @@ typedef struct s_scene
 // Structures Parsing
 
 // Library functions error.c
+int		error_main(const char *msg, char **tab);
 int		error(const char *msg);
 int		_check_extension(char *filename);
 int    alc_num(char **tab);

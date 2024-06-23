@@ -25,6 +25,9 @@ int fill_sphere(t_sph *sph, char *line)
 	if (color == -1)
 		return error(COLOR);
 	sph->color = color;
+	free_tab(ori);
+	free_tab(col);
+	free_tab(tab);
 	return (1);
 }
 
@@ -59,6 +62,10 @@ int fill_planet(t_pla *pla, char *line)
 	if (color == -1)
 		return error(COLOR);
 	pla->color = color;
+	free_tab(ori);
+	free_tab(nor);
+	free_tab(col);
+	free_tab(tab);
 	return (1);
 }
 
@@ -99,5 +106,9 @@ int fill_cylindre(t_cyl *cyl, char *line)
 	if (color == -1)
 		return error(COLOR);
 	cyl->color = color;
+	free_tab(ori);
+	free_tab(nor);
+	free_tab(col);
+	free_tab(tab);
 	return (1);
 }

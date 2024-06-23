@@ -1,5 +1,15 @@
 #include "../include/miniRT.h"
 
+int		error_main(const char *msg, char **tab)
+{
+    write(2, "Error: ", 7);
+	write(2, msg, _strlen(msg));
+	write(2, "\n", 1);
+    if (tab)
+        free_tab(tab);
+	return (0);
+}
+
 int	error(const char *msg)
 {
 	write(2, "Error: ", 7);

@@ -10,9 +10,7 @@ char	**add_to_map(char **scene, char *new_line)
 	size = 0;
 	while (scene && scene[size])
 		size++;
-	new_map = malloc(sizeof(char *) * (size + 2));
-	if (!new_map)
-		return (NULL);
+	new_map = _malloc(sizeof(char *) * (size + 2));
 	while (i < size)
 	{
 		new_map[i] = scene[i];
@@ -20,7 +18,7 @@ char	**add_to_map(char **scene, char *new_line)
 	}
 	new_map[i] = new_line;
 	new_map[i + 1] = NULL;
-	free(scene);
+	_memdel(scene);
 	return (new_map);
 }
 
@@ -39,7 +37,7 @@ char **get_scene(char *filename)
 	{
 		if (is_space(line))
 		{
-			free(line);
+			_memdel(line);
 			line = gnl(fd);
 			continue;
 		}
@@ -60,11 +58,11 @@ int main(int ac, char *av[])
 		return error("Usage:./miniRT [scene_file]");
 	sc = get_scene(av[1]);
 	if (sc == NULL)
-		return error("Can't read scene file");
+		return error_main("Can't read scene file", sc);
 	if (!alc_num(sc))
-		return error("Scene must contain one A, one C and one L");
+		return error_main("Scene must contain one A, one C and one L", sc);
 	if (!selecte(&scene, sc))
-		return (1);
+		return (error_main("Error in scene file", sc));
 	print_scene(&scene);
 	free_tab(sc);
 }
