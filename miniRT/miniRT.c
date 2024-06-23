@@ -52,7 +52,7 @@ char **get_scene(char *filename)
 
 int main(int ac, char *av[])
 {
-	t_scene scene;
+	t_scene scene = {0};
 	char	**sc;
 
 	sc = NULL;

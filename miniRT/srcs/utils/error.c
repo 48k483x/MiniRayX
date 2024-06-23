@@ -31,7 +31,7 @@ int    alc_num(char **tab)
             c_count++;
         free_tab(sc);
     }
-    if (a_count == 1 && l_count == 1 && c_count == 1)
+    if (a_count <= 1 && l_count <= 1 && c_count <= 1)
         return (1);
     return (0);
 }
