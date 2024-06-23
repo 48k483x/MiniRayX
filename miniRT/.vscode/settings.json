@@ -63,8 +63,6 @@
     "/nfs/homes/achahrou/.var/app/com.visualstudio.code/data/vscode/extensions/continue.continue-0.0.412-linux-x64"
   ],
   "files.associations": {
-    "*.embeddedhtml": "html",
-    "minirt.h": "c",
-    "mlx.h": "c"
+    "minirt.h": "c"
   }
 }

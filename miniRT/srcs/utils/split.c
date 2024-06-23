@@ -1,5 +1,12 @@
 #include "../include/miniRT.h"
 
+int	double_free(char **tab, void *ptr)
+{
+	free_tab(tab);
+	_memdel(ptr);
+	return (0);
+}
+
 void	free_tab(char **tab)
 {
 	int	i;

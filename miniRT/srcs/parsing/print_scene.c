@@ -45,26 +45,26 @@ void print_cylinder_list(t_cyl_l *cyl) {
 }
 
 void print_scene(t_scene *scene) {
-	// printf("Ambient Intensity: %.2f\n", scene->amb.intensity);
-	// printf("Ambient Color: %d\n", scene->amb.color);
+	printf("Ambient Intensity: %.2f\n", scene->amb.intensity);
+	printf("Ambient Color: %d\n", scene->amb.color);
 	
-	// printf("Camera Origin: ");
-	// print_vec3(scene->cam.origin);
-	// printf("Camera Normal: ");
-	// print_vec3(scene->cam.normal);
-	// printf("Camera FOV: %.2f\n", scene->cam.fov);
+	printf("Camera Origin: ");
+	print_vec3(scene->cam.origin);
+	printf("Camera Normal: ");
+	print_vec3(scene->cam.normal);
+	printf("Camera FOV: %.2f\n", scene->cam.fov);
 	
-	// printf("Light Origin: ");
-	// print_vec3(scene->light.origin);
-	// printf("Light Intensity: %.2f\n", scene->light.intensity);
-	// printf("Light Color: %d\n", scene->light.color);
+	printf("Light Origin: ");
+	print_vec3(scene->light.origin);
+	printf("Light Intensity: %.2f\n", scene->light.intensity);
+	printf("Light Color: %d\n", scene->light.color);
 	
 	printf("Spheres:\n");
 	print_sphere_list(scene->sph);
 	
-	// printf("\nPlanes:\n");
-	// print_plane_list(scene->pla);
+	printf("\nPlanes:\n");
+	print_plane_list(scene->pla);
 	
-	// printf("\nCylinders:\n");
-	// print_cylinder_list(scene->cyl);
+	printf("\nCylinders:\n");
+	print_cylinder_list(scene->cyl);
 }

@@ -148,6 +148,7 @@ int	is_digitf(char *s);
 // Library functions split.c
 char	**_split(char const *s, char c);
 void	free_tab(char **tab);
+int	double_free(char **tab, void *ptr);
 
 // A, C, L Parsing and Filling
 int		get_color(t_vec3 color); // color to int hihi
