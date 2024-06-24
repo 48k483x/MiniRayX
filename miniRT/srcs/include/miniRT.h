@@ -50,7 +50,7 @@
 # define ST_ERR			"stars option can't be implemented"
 # define RADIUS			"radius and height must be positive"
 # define ORIGIN_ERR		"origin must have 3 coordinates"
-
+# define M_PI			3.14159265358979323846
 typedef struct s_vec3
 {
 	double		x;
@@ -129,6 +129,25 @@ typedef struct s_scene
 	t_cyl_l		*cyl;
 }				t_scene;
 
+typedef struct s_mlx
+{
+	void		*mlx;
+	void		*win;
+	void		*img;
+	char		*addr;
+	int			bpp;
+	int			line_len;
+	int			endian;
+	int			width;
+	int			height;
+}				t_mlx;
+
+typedef struct s_ray
+{
+	t_vec3		origin;
+	t_vec3		dir;
+}				t_ray;
+
 // Structures Parsing
 
 // Library functions error.c
@@ -165,6 +184,15 @@ int		fill_light(t_light *light, char *line);
 int		fill_sphere(t_sph *sph, char *line);
 int		fill_planet(t_pla *pla, char *line);
 int		fill_cylindre(t_cyl *cyl, char *line);
+
+// VECTOR FUNCTIONS
+t_vec3 vec3_add(t_vec3 a, t_vec3 b);
+t_vec3 vec3_sub(t_vec3 a, t_vec3 b);
+t_vec3 vec3_scale(t_vec3 v, float s);
+float vec3_dot(t_vec3 a, t_vec3 b);
+t_vec3 vec3_cross(t_vec3 a, t_vec3 b);
+float vec3_length(t_vec3 v);
+t_vec3 vec3_normalize(t_vec3 v);
 
 // SP, PL, CY, A, C, L Printing
 void	print_scene(t_scene *scene);
