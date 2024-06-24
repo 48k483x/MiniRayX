@@ -25,7 +25,7 @@ t_ray get_ray(t_scene *scene, t_mlx *mlx, double u, double v)
     double viewport_height = 2.0 * tan((scene->cam.fov / 2.0) * (M_PI / 180.0));
     double viewport_width = aspect_ratio * viewport_height;
 
-    t_vec3 w = vec3_normalize(vec3_scale(scene->cam.normal, -1)); // Forward vector
+    t_vec3 w = vec3_normalize(vec3_scale(scene->cam.normal, -1)); // Forward vectorr
     t_vec3 upp = {0, 1, 0}; // World up vector
     t_vec3 right = vec3_normalize(vec3_cross(upp, w)); // Right vector
     t_vec3 up = vec3_cross(w, right); // True up vector
