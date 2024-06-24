@@ -49,6 +49,7 @@
 # define FOV_ERR		"FOV must range from 0 to 180"
 # define ST_ERR			"stars option can't be implemented"
 # define RADIUS			"radius and height must be positive"
+# define ORIGIN_ERR		"origin must have 3 coordinates"
 
 typedef struct s_vec3
 {
