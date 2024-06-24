@@ -10,20 +10,41 @@ int fill_sphere(t_sph *sph, char *line)
 	tab = _split(line, ' ');
 	if (_strlen(tab[0]) != 2 || (tab[0][0] != 's' && tab[0][1] != 'p')\
 		|| tab[0][2] != '\0')
+	{
+		free_tab(tab);
 		return error("Sphere must start with 's'");
+	}
 	ori = _split(tab[1], ',');
 	if (!three_check(ori))
+	{
+		free_tab(ori);
+		free_tab(tab);
 		return error("ORIGIN_ERR");
+	}
 	sph->origin = (t_vec3){_atof(ori[0]), _atof(ori[1]), _atof(ori[2])};
 	if (!is_digitf(tab[2]) || _atof(tab[2]) < 0)
+	{
+		free_tab(ori);
+		free_tab(tab);
 		return error(RADIUS);
+	}
 	sph->diameter = _atof(tab[2]);
 	col = _split(tab[3], ',');
 	if (!three_check(col))
+	{
+		free_tab(ori);
+		free_tab(col);
+		free_tab(tab);
 		return error(COLOR);
+	}
 	color = get_color((t_vec3){_atof(col[0]), _atof(col[1]), _atof(col[2])});
 	if (color == -1)
+	{
+		free_tab(ori);
+		free_tab(col);
+		free_tab(tab);
 		return error(COLOR);
+	}
 	sph->color = color;
 	free_tab(ori);
 	free_tab(col);
@@ -42,25 +63,53 @@ int fill_planet(t_pla *pla, char *line)
 	tab = _split(line, ' ');
 	if (_strlen(tab[0]) != 2 || (tab[0][0] != 'p' && tab[0][1] != 'l')\
 		|| tab[0][2] != '\0')
+	{
+		free_tab(tab);
 		return error("Plane must start with 'p'");
+	}
 	ori = _split(tab[1], ',');
 	if (!three_check(ori))
+	{
+		free_tab(ori);
+		free_tab(tab);
 		return error("ORIGIN_ERR");
+	}
 	pla->origin = (t_vec3){_atof(ori[0]), _atof(ori[1]), _atof(ori[2])};
 	nor = _split(tab[2], ',');
 	if (!three_check(nor))
+	{
+		free_tab(ori);
+		free_tab(nor);
+		free_tab(tab);
 		return error(DIR_VECTOR);
+	}
 	if (_atof(nor[0]) < -1 || _atof(nor[0]) > 1 ||\
 		_atof(nor[1]) < -1 || _atof(nor[1]) > 1 ||\
 		_atof(nor[2]) < -1 || _atof(nor[2]) > 1)
+	{
+		free_tab(ori);
+		free_tab(nor);
+		free_tab(tab);
 		return error(DIR_VECTOR);
+	}
 	pla->normal = (t_vec3){_atof(nor[0]), _atof(nor[1]), _atof(nor[2])};
 	col = _split(tab[3], ',');
 	if (!three_check(col))
+	{
+		free_tab(ori);
+		free_tab(nor);
+		free_tab(col);
+		free_tab(tab);
 		return error(COLOR);
+	}
 	color = get_color((t_vec3){_atof(col[0]), _atof(col[1]), _atof(col[2])});
 	if (color == -1)
+	{
+		free_tab(ori);
+		free_tab(nor);
+		free_tab(col);
 		return error(COLOR);
+	}
 	pla->color = color;
 	free_tab(ori);
 	free_tab(nor);
@@ -80,31 +129,70 @@ int fill_cylindre(t_cyl *cyl, char *line)
 	tab = _split(line, ' ');
 	if (_strlen(tab[0]) != 2 || (tab[0][0] != 'c' && tab[0][1] != 'y')\
 		|| tab[0][2] != '\0')
+	{
+		free_tab(tab);
 		return error("Cylinder must start with 'cy'");
+	}
 	ori = _split(tab[1], ',');
 	if (!three_check(ori))
+	{
+		free_tab(ori);
+		free_tab(tab);
 		return error("ORIGIN_ERR");
+	}
 	cyl->origin = (t_vec3){_atof(ori[0]), _atof(ori[1]), _atof(ori[2])};
 	nor = _split(tab[2], ',');
 	if (!three_check(nor))
+	{
+		free_tab(ori);
+		free_tab(nor);
+		free_tab(tab);
 		return error(DIR_VECTOR);
+	}
 	if (_atof(nor[0]) < -1 || _atof(nor[0]) > 1 ||\
 		_atof(nor[1]) < -1 || _atof(nor[1]) > 1 ||\
 		_atof(nor[2]) < -1 || _atof(nor[2]) > 1)
+	{
+		free_tab(ori);
+		free_tab(nor);
+		free_tab(tab);
 		return error(DIR_VECTOR);
+	}
 	cyl->normal = (t_vec3){_atof(nor[0]), _atof(nor[1]), _atof(nor[2])};
 	if (!is_digitf(tab[3]) || _atof(tab[3]) < 0)
+	{
+		free_tab(ori);
+		free_tab(nor);
+		free_tab(tab);
 		return error(RADIUS);
+	}
 	cyl->diameter = _atof(tab[3]);
 	if (!is_digitf(tab[4]) || _atof(tab[4]) < 0)
+	{
+		free_tab(ori);
+		free_tab(nor);
+		free_tab(tab);
 		return error(RADIUS);
+	}
 	cyl->height = _atof(tab[4]);
 	col = _split(tab[5], ',');
 	if (!three_check(col))
+	{
+		free_tab(ori);
+		free_tab(nor);
+		free_tab(col);
+		free_tab(tab);
 		return error(COLOR);
+	}
 	color = get_color((t_vec3){_atof(col[0]), _atof(col[1]), _atof(col[2])});
 	if (color == -1)
+	{
+		free_tab(ori);
+		free_tab(nor);
+		free_tab(col);
+		free_tab(tab);
 		return error(COLOR);
+	}
 	cyl->color = color;
 	free_tab(ori);
 	free_tab(nor);

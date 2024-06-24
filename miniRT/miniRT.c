@@ -64,6 +64,7 @@ int main(int ac, char *av[])
 	if (!selecte(&scene, sc))
 		return (error_main("Error in scene file", sc));
 	print_scene(&scene);
+	free_all_l(&scene);
 	free_tab(sc);
 }
 

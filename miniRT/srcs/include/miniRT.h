@@ -170,6 +170,7 @@ void print_scene(t_scene *scene);
 
 // SP, PL, CY Parsing and Filling and Select
 int    selecte(t_scene *scene, char **tab);
+void	free_all_l(t_scene *scene);
 
 
 #endif

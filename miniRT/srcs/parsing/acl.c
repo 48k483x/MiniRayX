@@ -31,15 +31,30 @@ int	fill_amb(t_amb *amb, char *line)
 
 	tab = _split(line, ' ');
 	if (_strlen(tab[0]) != 1 || tab[0][0] != 'A' || tab[0][1] != '\0')
+	{
+		free_tab(tab);
 		return error("Ambiant light must start with 'A'");
+	}
 	colors = _split(tab[2], ',');
 	if (!three_check(colors))
+	{
+		free_tab(colors);
+		free_tab(tab);
 		return error(COLOR);
+	}
 	color = get_color((t_vec3){_atof(colors[0]), _atof(colors[1]), _atof(colors[2])});
 	if (color == -1)
+	{
+		free_tab(colors);
+		free_tab(tab);
 		return error(COLOR);
+	}
 	if (!is_digitf(tab[1]) || (_atof(tab[1]) < 0 || _atof(tab[1]) > 1))
+	{
+		free_tab(colors);
+		free_tab(tab);
 		return error(INTENSITY);
+	}
 	amb->intensity = _atof(tab[1]);
 	amb->color = color;
 	free_tab(colors);
@@ -56,21 +71,38 @@ int	fill_cam(t_cam *cam, char *line)
 
 	tab = _split(line, ' ');
 	if (_strlen(tab[0]) != 1 || tab[0][0] != 'C' || tab[0][1] != '\0')
+	{
+		free_tab(tab);
 		return error("Camera must start with 'C'");
+	}
 	ori = _split(tab[1], ',');
 	if (!three_check(ori))
+	{
+		free_tab(ori);
+		free_tab(tab);
 		return error("ORIGIN_ERR");
+	}
 	cam->origin = (t_vec3){_atof(ori[0]), _atof(ori[1]), _atof(ori[2])};
 	nor = _split(tab[2], ',');
 	if (!three_check(nor))
+	{
+		free_tab(ori);
+		free_tab(nor);
+		free_tab(tab);
 		return error(DIR_VECTOR);
+	}
 	if (_atof(nor[0]) < -1 || _atof(nor[0]) > 1 ||\
 		_atof(nor[1]) < -1 || _atof(nor[1]) > 1 ||\
 		_atof(nor[2]) < -1 || _atof(nor[2]) > 1)
 		return error(DIR_VECTOR);
 	cam->normal = (t_vec3){_atof(nor[0]), _atof(nor[1]), _atof(nor[2])};
 	if (!is_digitf(tab[3]) || (_atof(tab[3]) < 0 || _atof(tab[3]) > 180))
+	{
+		free_tab(ori);
+		free_tab(nor);
+		free_tab(tab);
 		return error(FOV_ERR);
+	}
 	cam->fov = _atof(tab[3]);
 	free_tab(ori);
 	free_tab(nor);
@@ -88,20 +120,41 @@ int	fill_light(t_light *light, char *line)
 
 	tab = _split(line, ' ');
 	if (_strlen(tab[0]) != 1 || tab[0][0] != 'L' || tab[0][1] != '\0')
+	{
+		free_tab(tab);
 		return error("Error: Light must start with 'l'");
+	}
 	ori = _split(tab[1], ',');
 	if (!three_check(ori))
+	{
+		free_tab(ori);
+		free_tab(tab);
 		return error("ORIGIN_ERR");
+	}
 	light->origin = (t_vec3){_atof(ori[0]), _atof(ori[1]), _atof(ori[2])};
 	if (!is_digitf(tab[2]) || _atof(tab[2]) < 0 || _atof(tab[2]) > 1)
+	{
+		free_tab(ori);
+		free_tab(tab);
 		return error(INTENSITY);
+	}
 	light->intensity = _atof(tab[2]);
 	colors = _split(tab[3], ',');
 	if (!three_check(colors))
+	{
+		free_tab(ori);
+		free_tab(colors);
+		free_tab(tab);
 		return error(COLOR);
+	}
 	color = get_color((t_vec3){_atof(colors[0]), _atof(colors[1]), _atof(colors[2])});
 	if (color == -1)
+	{
+		free_tab(ori);
+		free_tab(colors);
+		free_tab(tab);
 		return error(COLOR);
+	}
 	light->color = color;
 	free_tab(ori);
 	free_tab(colors);

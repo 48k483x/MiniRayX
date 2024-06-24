@@ -57,10 +57,12 @@
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "python.analysis.extraPaths": [
-    "/nfs/homes/achahrou/.var/app/com.visualstudio.code/data/vscode/extensions/continue.continue-0.0.412-linux-x64"
+    "/nfs/homes/achahrou/.var/app/com.visualstudio.code/data/vscode/extensions/continue.continue-0.0.412-linux-x64",
+    "/home/void_id/.vscode/extensions/continue.continue-0.0.412-linux-x64"
   ],
   "python.autoComplete.extraPaths": [
-    "/nfs/homes/achahrou/.var/app/com.visualstudio.code/data/vscode/extensions/continue.continue-0.0.412-linux-x64"
+    "/nfs/homes/achahrou/.var/app/com.visualstudio.code/data/vscode/extensions/continue.continue-0.0.412-linux-x64",
+    "/home/void_id/.vscode/extensions/continue.continue-0.0.412-linux-x64"
   ],
   "files.associations": {
     "minirt.h": "c"

@@ -16,6 +16,49 @@ int	is_spcypl(char **tab, char type, char type2)
 	return (0);
 }
 
+void	free_sphl_list(t_sph_l *sph)
+{
+	t_sph_l *tmp;
+
+	while (sph)
+	{
+		tmp = sph;
+		sph = sph->next;
+		free(tmp);
+	}
+}
+
+void	free_pl_l(t_pla_l *pla)
+{
+	t_pla_l *tmp;
+
+	while (pla)
+	{
+		tmp = pla;
+		pla = pla->next;
+		free(tmp);
+	}
+}
+
+void	free_cyl_l(t_cyl_l *cyl)
+{
+	t_cyl_l *tmp;
+
+	while (cyl)
+	{
+		tmp = cyl;
+		cyl = cyl->next;
+		free(tmp);
+	}
+}
+
+void	free_all_l(t_scene *scene)
+{
+	free_sphl_list(scene->sph);
+	free_pl_l(scene->pla);
+	free_cyl_l(scene->cyl);
+}
+
 int	not_type(char *line)
 {
 	if (_strlen(line) == 1 && line[0] == 'A' && line[1] == '\0')
@@ -185,16 +228,34 @@ int	select_cy(t_scene *scene, char **tab)
 int    selecte(t_scene *scene, char **tab)
 {
 	if (!select_a(scene, tab))
+	{
+		free_all_l(scene);
 		return (0);
+	}
 	if (!select_c(scene, tab))
+	{
+		free_all_l(scene);
 		return (0);
+	}
 	if (!select_l(scene, tab))
+	{
+		free_all_l(scene);
 		return (0);
+	}
 	if (!select_sp(scene, tab))
+	{
+		free_all_l(scene);
 		return (0);
+	}
 	if (!select_pl(scene, tab))
+	{
+		free_all_l(scene);
 		return (0);
+	}
 	if (!select_cy(scene, tab))
+	{
+		free_all_l(scene);
 		return (0);
+	}
 	return (1);
 }
