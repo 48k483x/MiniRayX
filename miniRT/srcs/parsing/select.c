@@ -225,37 +225,25 @@ int	select_cy(t_scene *scene, char **tab)
 	return (1);
 }
 
+int	return_free_l(t_scene *scene, int ret)
+{
+	free_all_l(scene);
+	return (ret);
+}
+
 int    selecte(t_scene *scene, char **tab)
 {
 	if (!select_a(scene, tab))
-	{
-		free_all_l(scene);
-		return (0);
-	}
+		return (return_free_l(scene, 0));
 	if (!select_c(scene, tab))
-	{
-		free_all_l(scene);
-		return (0);
-	}
+		return (return_free_l(scene, 0));
 	if (!select_l(scene, tab))
-	{
-		free_all_l(scene);
-		return (0);
-	}
+		return (return_free_l(scene, 0));
 	if (!select_sp(scene, tab))
-	{
-		free_all_l(scene);
-		return (0);
-	}
+		return (return_free_l(scene, 0));
 	if (!select_pl(scene, tab))
-	{
-		free_all_l(scene);
-		return (0);
-	}
+		return (return_free_l(scene, 0));
 	if (!select_cy(scene, tab))
-	{
-		free_all_l(scene);
-		return (0);
-	}
+		return (return_free_l(scene, 0));
 	return (1);
 }
