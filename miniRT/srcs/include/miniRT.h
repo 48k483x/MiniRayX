@@ -135,22 +135,26 @@ typedef struct s_scene
 int		error_main(const char *msg, char **tab);
 int		error(const char *msg);
 int		_check_extension(char *filename);
-int    alc_num(char **tab);
+int		alc_num(char **tab);
 
 // Library functions libft.c
 void	*_malloc(size_t size);
 void	*_memdel(void *ptr);
-int     _strlen(const char *str);
+int		_strlen(const char *str);
 char	*_strnstr(const char *big, const char *little, size_t len);
 float	_atof(char *str);
-int	is_space(char *s);
-int	is_digit(char c);
-int	is_digitf(char *s);
+int		is_space(char *s);
+int		is_digit(char c);
+int		is_digitf(char *s);
 
 // Library functions split.c
 char	**_split(char const *s, char c);
 void	free_tab(char **tab);
-int	double_free(char **tab, void *ptr);
+int		double_free(char **tab, void *ptr);
+
+// GET SCENE FUNCTIONS
+char	**add_to_map(char **scene, char *new_line);
+char	**get_scene(char *filename);
 
 // A, C, L Parsing and Filling
 int		get_color(t_vec3 color); // color to int hihi
@@ -163,14 +167,10 @@ int		fill_planet(t_pla *pla, char *line);
 int		fill_cylindre(t_cyl *cyl, char *line);
 
 // SP, PL, CY, A, C, L Printing
-void print_vec3(t_vec3 vec);
-void print_sphere_list(t_sph_l *sph);
-void print_plane_list(t_pla_l *pla);
-void print_cylinder_list(t_cyl_l *cyl);
-void print_scene(t_scene *scene);
+void	print_scene(t_scene *scene);
 
 // SP, PL, CY Parsing and Filling and Select
-int    selecte(t_scene *scene, char **tab);
+int		selecte(t_scene *scene, char **tab);
 void	free_all_l(t_scene *scene);
 
 
