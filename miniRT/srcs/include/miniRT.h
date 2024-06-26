@@ -69,6 +69,9 @@ typedef struct s_cam
 	t_vec3		origin;
 	t_vec3		normal;
 	double		fov;
+	t_vec3		up;
+	t_vec3		right;
+	t_vec3		forward;
 }				t_cam;
 
 typedef struct s_light

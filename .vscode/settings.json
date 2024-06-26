@@ -61,5 +61,11 @@
     "minirt.h": "c",
     "raytracer.h": "c"
   },
-  "C_Cpp.errorSquiggles": "disabled"
+  "C_Cpp.errorSquiggles": "disabled",
+  "python.analysis.extraPaths": [
+    "/home/void_id/.vscode/extensions/continue.continue-0.0.412-linux-x64"
+  ],
+  "python.autoComplete.extraPaths": [
+    "/home/void_id/.vscode/extensions/continue.continue-0.0.412-linux-x64"
+  ]
 }

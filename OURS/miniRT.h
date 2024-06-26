@@ -1,7 +1,7 @@
 #ifndef MINIRT_H
 # define MINIRT_H
 
-#include "minilibx-linux/mlx.h"
+#include "../minilibx-linux/mlx.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -95,6 +95,7 @@ int handle_keypress(int keycode, MLX *mlx);
 int handle_close(MLX *mlx);
 
 #define FOV 90
+#define M_PI 3.14159265358979323846
 
 #endif
 
