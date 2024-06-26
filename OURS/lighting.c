@@ -1,17 +1,41 @@
 #include "miniRT.h"
+#include <math.h>
 
-Vec3 calculate_lighting(Vec3 point, Vec3 normal, Vec3 view_dir, Light light, Vec3 object_color)
+int is_in_shadow(Ray shadow_ray, Sphere sphere, Plane plane, Cylinder cylinder, float light_distance)
+{
+    float t;
+    if (ray_intersect_sphere(shadow_ray, sphere, &t) && t > 0.001 && t < light_distance)
+        return 1;
+    if (ray_intersect_plane(shadow_ray, plane, &t) && t > 0.001 && t < light_distance)
+        return 1;
+    if (ray_intersect_cylinder(shadow_ray, cylinder, &t) && t > 0.001 && t < light_distance)
+        return 1;
+    return 0;
+}
+
+Vec3 calculate_lighting(Vec3 point, Vec3 normal, Vec3 view_dir, Light light, Vec3 object_color, 
+                        Sphere sphere, Plane plane, Cylinder cylinder)
 {
     // Normalize vectors
     normal = vec3_normalize(normal);
     view_dir = vec3_normalize(view_dir);
 
-    // Calculate light direction
-    Vec3 light_dir = vec3_normalize(vec3_sub(light.position, point));
+    // Calculate light direction and distance
+    Vec3 light_dir = vec3_sub(light.position, point);
+    float light_distance = vec3_length(light_dir);
+    light_dir = vec3_normalize(light_dir);
 
     // Ambient lighting
     float ambient_strength = 0.1;
     Vec3 ambient = vec3_scale(object_color, ambient_strength);
+
+    // Check for shadows
+    Ray shadow_ray = {point, light_dir};
+    if (is_in_shadow(shadow_ray, sphere, plane, cylinder, light_distance))
+    {
+        // If in shadow, only return ambient light
+        return ambient;
+    }
 
     // Diffuse lighting
     float diff = fmax(vec3_dot(normal, light_dir), 0.0);
@@ -33,39 +57,3 @@ Vec3 calculate_lighting(Vec3 point, Vec3 normal, Vec3 view_dir, Light light, Vec
 
     return result;
 }
-
-// Optional: Add shadow calculation
-int is_in_shadow(Ray shadow_ray, Sphere sphere, Plane plane, Cylinder cylinder, float light_distance)
-{
-    float t;
-    if (ray_intersect_sphere(shadow_ray, sphere, &t) && t < light_distance)
-        return 1;
-    if (ray_intersect_plane(shadow_ray, plane, &t) && t < light_distance)
-        return 1;
-    if (ray_intersect_cylinder(shadow_ray, cylinder, &t) && t < light_distance)
-        return 1;
-    return 0;
-}
-
-// If you decide to implement shadows, you can modify the calculate_lighting function like this:
-/*
-Vec3 calculate_lighting(Vec3 point, Vec3 normal, Vec3 view_dir, Light light, Vec3 object_color, 
-                        Sphere sphere, Plane plane, Cylinder cylinder)
-{
-    // ... (previous ambient, diffuse, specular calculations) ...
-
-    // Shadow calculation
-    Vec3 light_dir = vec3_sub(light.position, point);
-    float light_distance = vec3_length(light_dir);
-    light_dir = vec3_normalize(light_dir);
-    Ray shadow_ray = {point, light_dir};
-    
-    if (is_in_shadow(shadow_ray, sphere, plane, cylinder, light_distance))
-    {
-        // If in shadow, only return ambient light
-        return ambient;
-    }
-
-    // ... (combine lighting components as before) ...
-}
-*/

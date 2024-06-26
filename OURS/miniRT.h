@@ -102,6 +102,7 @@ Vec3 vec3_add(Vec3 a, Vec3 b);
 Vec3 vec3_sub(Vec3 a, Vec3 b);
 Vec3 vec3_scale(Vec3 v, float s);
 float vec3_dot(Vec3 a, Vec3 b);
+float vec3_length(Vec3 v);
 Vec3 vec3_cross(Vec3 a, Vec3 b);
 Vec3 vec3_normalize(Vec3 v);
 
@@ -111,7 +112,8 @@ int ray_intersect_plane(Ray ray, Plane plane, float *t);
 int ray_intersect_cylinder(Ray ray, Cylinder cylinder, float *t);
 
 // Lighting calculation
-Vec3 calculate_lighting(Vec3 point, Vec3 normal, Vec3 view_dir, Light light, Vec3 object_color);
+Vec3 calculate_lighting(Vec3 point, Vec3 normal, Vec3 view_dir, Light light, Vec3 object_color, 
+                        Sphere sphere, Plane plane, Cylinder cylinder);
 
 // Scene rendering
 void put_pixel(MLX *mlx, int x, int y, int color);

@@ -44,33 +44,34 @@ void draw_scene(MLX *mlx, Sphere sphere, Plane plane, Cylinder cylinder, Light l
                 float t = INFINITY;
                 Vec3 color;
                 Vec3 normal;
+                Vec3 point;
 
                 if (hit_sphere && t_sphere < t)
                 {
                     t = t_sphere;
                     color = sphere.color;
-                    Vec3 point = vec3_add(ray.origin, vec3_scale(ray.direction, t));
+                    point = vec3_add(ray.origin, vec3_scale(ray.direction, t));
                     normal = vec3_normalize(vec3_sub(point, sphere.center));
                 }
                 if (hit_plane && t_plane < t)
                 {
                     t = t_plane;
                     color = plane.color;
+                    point = vec3_add(ray.origin, vec3_scale(ray.direction, t));
                     normal = plane.normal;
                 }
                 if (hit_cylinder && t_cylinder < t)
                 {
                     t = t_cylinder;
                     color = cylinder.color;
-                    Vec3 point = vec3_add(ray.origin, vec3_scale(ray.direction, t));
+                    point = vec3_add(ray.origin, vec3_scale(ray.direction, t));
                     Vec3 co = vec3_sub(point, cylinder.center);
                     Vec3 projection = vec3_scale(cylinder.axis, vec3_dot(co, cylinder.axis));
                     normal = vec3_normalize(vec3_sub(co, projection));
                 }
 
-                Vec3 point = vec3_add(ray.origin, vec3_scale(ray.direction, t));
                 Vec3 view_dir = vec3_scale(ray.direction, -1);
-                Vec3 final_color = calculate_lighting(point, normal, view_dir, light, color);
+                Vec3 final_color = calculate_lighting(point, normal, view_dir, light, color, sphere, plane, cylinder);
                 put_pixel(mlx, x, y, get_color(final_color));
             }
             else
@@ -84,11 +85,12 @@ void draw_scene(MLX *mlx, Sphere sphere, Plane plane, Cylinder cylinder, Light l
 int handle_keypress(int keycode, MLX *mlx)
 {
     static Camera camera = {
-        .pos = {0, 0, 0},
-        .forward = {0, 0, -1},
-        .up = {0, 1, 0},
-        .right = {1, 0, 0}};
-    const float move_speed = 0.1;
+        .pos = {2, 10, -6},
+        .forward = {0, -1, 0},
+        .up = {0, 0, 1},
+        .right = {1, 0, 0}
+    };
+    const float move_speed = 0.5;
     const float rotate_speed = 0.1;
 
     if (keycode == ESC_KEY)
@@ -97,29 +99,17 @@ int handle_keypress(int keycode, MLX *mlx)
         exit(0);
     }
     else if (keycode == W_KEY)
-    {
         camera.pos = vec3_add(camera.pos, vec3_scale(camera.forward, move_speed));
-    }
     else if (keycode == S_KEY)
-    {
         camera.pos = vec3_add(camera.pos, vec3_scale(camera.forward, -move_speed));
-    }
     else if (keycode == A_KEY)
-    {
         camera.pos = vec3_add(camera.pos, vec3_scale(camera.right, -move_speed));
-    }
     else if (keycode == D_KEY)
-    {
         camera.pos = vec3_add(camera.pos, vec3_scale(camera.right, move_speed));
-    }
     else if (keycode == UP)
-    {
         camera.pos = vec3_add(camera.pos, vec3_scale(camera.up, move_speed));
-    }
     else if (keycode == DOWN)
-    {
         camera.pos = vec3_add(camera.pos, vec3_scale(camera.up, -move_speed));
-    }
     else if (keycode == LEFT)
     {
         camera.forward = vec3_normalize(vec3_add(
@@ -167,7 +157,7 @@ int main()
     Cylinder cylinder = {{2, 0, -6}, {0, 1, 0}, 0.5, 2, {0, 0, 1}}; // Blue cylinder
     Light light = {{5, 5, -5}, {1, 1, 1}, 0.9}; // Bright white light
 
-    // Adjust camera to look down from above
+    // Camera setup for top-down view
     Camera camera = {
         .pos = {2, 10, -6},  // Position high above the scene
         .forward = {0, -1, 0},  // Looking straight down
