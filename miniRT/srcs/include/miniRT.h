@@ -51,6 +51,9 @@
 # define RADIUS			"radius and height must be positive"
 # define ORIGIN_ERR		"origin must have 3 coordinates"
 # define M_PI			3.14159265358979323846
+# define WIDTH			1200
+# define HEIGHT			800
+# define ESP			0.000001
 typedef struct s_vec3
 {
 	double		x;
@@ -69,9 +72,6 @@ typedef struct s_cam
 	t_vec3		origin;
 	t_vec3		normal;
 	double		fov;
-	t_vec3		up;
-	t_vec3		right;
-	t_vec3		forward;
 }				t_cam;
 
 typedef struct s_light
@@ -132,6 +132,18 @@ typedef struct s_scene
 	t_cyl_l		*cyl;
 }				t_scene;
 
+typedef	struct s_camera
+{
+	t_vec3		origin;
+	t_vec3		up;
+	t_vec3		right;
+	t_vec3		forward;
+	double		width;
+	double		height;
+	double		aspratio;
+	double		theeta;
+}				t_camera;
+
 typedef struct s_mlx
 {
 	void		*mlx;
@@ -150,6 +162,28 @@ typedef struct s_ray
 	t_vec3		origin;
 	t_vec3		dir;
 }				t_ray;
+
+typedef struct s_render
+{
+	t_camera	cam;
+	t_ray		ray;
+	double		px;
+	double		py;
+	int			x;
+	int			y;
+	double		scale;
+}				t_render;
+
+typedef struct sphere
+{
+	double	a;
+	double	b;
+	double	c;
+	double	t;
+	double	t1;
+	double	t2;
+	t_vec3	oc;
+}	t_sphere;
 
 // Structures Parsing
 
@@ -204,6 +238,16 @@ void	print_scene(t_scene *scene);
 int		selecte(t_scene *scene, char **tab);
 void	free_all_l(t_scene *scene);
 
+
+// RAYTRACE FUNCTIONS
+
+// RAYTRACE CAMERA FUNCTIONS
+int esc_key(int key, t_mlx *mlx);
+t_camera set_camera(t_scene *scene);
+t_ray set_ray(t_camera *cam, double x, double y);
+
+// RAYTRACE FILE FUNCTIONS
+void	ft_render(t_scene *scene, t_mlx *mlx);
 
 #endif
 
