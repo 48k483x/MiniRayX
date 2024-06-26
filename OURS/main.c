@@ -16,7 +16,7 @@ int get_color(Vec3 color)
     return (r << 16) | (g << 8) | b;
 }
 
-void draw_scene(MLX *mlx, Sphere sphere, Light light, Camera camera)
+void draw_scene(MLX *mlx, Sphere sphere, Plane plane, Cylinder cylinder, Light light, Camera camera)
 {
     float aspect_ratio = (float)mlx->width / (float)mlx->height;
     float scale = tan(FOV * 0.5 * M_PI / 180);
@@ -33,14 +33,45 @@ void draw_scene(MLX *mlx, Sphere sphere, Light light, Camera camera)
                 px * camera.right.y + py * camera.up.y + camera.forward.y,
                 px * camera.right.z + py * camera.up.z + camera.forward.z});
             Ray ray = {camera.pos, ray_dir};
-            float t;
-            if (ray_intersect_sphere(ray, sphere, &t))
+
+            float t_sphere, t_plane, t_cylinder;
+            int hit_sphere = ray_intersect_sphere(ray, sphere, &t_sphere);
+            int hit_plane = ray_intersect_plane(ray, plane, &t_plane);
+            int hit_cylinder = ray_intersect_cylinder(ray, cylinder, &t_cylinder);
+
+            if (hit_sphere || hit_plane || hit_cylinder)
             {
+                float t = INFINITY;
+                Vec3 color;
+                Vec3 normal;
+
+                if (hit_sphere && t_sphere < t)
+                {
+                    t = t_sphere;
+                    color = sphere.color;
+                    Vec3 point = vec3_add(ray.origin, vec3_scale(ray.direction, t));
+                    normal = vec3_normalize(vec3_sub(point, sphere.center));
+                }
+                if (hit_plane && t_plane < t)
+                {
+                    t = t_plane;
+                    color = plane.color;
+                    normal = plane.normal;
+                }
+                if (hit_cylinder && t_cylinder < t)
+                {
+                    t = t_cylinder;
+                    color = cylinder.color;
+                    Vec3 point = vec3_add(ray.origin, vec3_scale(ray.direction, t));
+                    Vec3 co = vec3_sub(point, cylinder.center);
+                    Vec3 projection = vec3_scale(cylinder.axis, vec3_dot(co, cylinder.axis));
+                    normal = vec3_normalize(vec3_sub(co, projection));
+                }
+
                 Vec3 point = vec3_add(ray.origin, vec3_scale(ray.direction, t));
-                Vec3 normal = vec3_normalize(vec3_sub(point, sphere.center));
                 Vec3 view_dir = vec3_scale(ray.direction, -1);
-                Vec3 color = calculate_lighting(point, normal, view_dir, light, sphere);
-                put_pixel(mlx, x, y, get_color(color));
+                Vec3 final_color = calculate_lighting(point, normal, view_dir, light, color);
+                put_pixel(mlx, x, y, get_color(final_color));
             }
             else
             {
@@ -60,51 +91,56 @@ int handle_keypress(int keycode, MLX *mlx)
     const float move_speed = 0.1;
     const float rotate_speed = 0.1;
 
-    if (keycode == 53 || keycode == 65307)
-    { // ESC key code for macOS
+    if (keycode == ESC_KEY)
+    {
         mlx_destroy_window(mlx->mlx, mlx->win);
         exit(0);
     }
     else if (keycode == W_KEY)
-    { // W key
+    {
         camera.pos = vec3_add(camera.pos, vec3_scale(camera.forward, move_speed));
     }
     else if (keycode == S_KEY)
-    { // S key
+    {
         camera.pos = vec3_add(camera.pos, vec3_scale(camera.forward, -move_speed));
     }
     else if (keycode == A_KEY)
-    { // A key
+    {
         camera.pos = vec3_add(camera.pos, vec3_scale(camera.right, -move_speed));
     }
     else if (keycode == D_KEY)
-    { // D key
+    {
         camera.pos = vec3_add(camera.pos, vec3_scale(camera.right, move_speed));
     }
     else if (keycode == UP)
-    { // Up arrow key
+    {
         camera.pos = vec3_add(camera.pos, vec3_scale(camera.up, move_speed));
     }
     else if (keycode == DOWN)
-    { // Down arrow key
+    {
         camera.pos = vec3_add(camera.pos, vec3_scale(camera.up, -move_speed));
     }
     else if (keycode == LEFT)
-    { // Left arrow key
+    {
         camera.forward = vec3_normalize(vec3_add(
             vec3_scale(camera.forward, cos(rotate_speed)),
             vec3_scale(camera.right, -sin(rotate_speed))));
         camera.right = vec3_cross(camera.forward, camera.up);
     }
     else if (keycode == RIGHT)
-    { // Right arrow key
+    {
         camera.forward = vec3_normalize(vec3_add(
             vec3_scale(camera.forward, cos(rotate_speed)),
             vec3_scale(camera.right, sin(rotate_speed))));
         camera.right = vec3_cross(camera.forward, camera.up);
     }
 
-    draw_scene(mlx, (Sphere){{0, 0, -5}, 1, {1, 0, 0}}, (Light){{5, 5, -5}, {1, 1, 1}, 0.9}, camera);
+    Sphere sphere = {{0, 0, -5}, 1, {1, 0, 0}};
+    Plane plane = {{0, -1, 0}, {0, 1, 0}, {0, 1, 0}};
+    Cylinder cylinder = {{2, 0, -6}, {0, 1, 0}, 0.5, 2, {0, 0, 1}};
+    Light light = {{5, 5, -5}, {1, 1, 1}, 0.9};
+
+    draw_scene(mlx, sphere, plane, cylinder, light, camera);
     mlx_put_image_to_window(mlx->mlx, mlx->win, mlx->img, 0, 0);
     return 0;
 }
@@ -127,15 +163,19 @@ int main()
     mlx.data = mlx_get_data_addr(mlx.img, &mlx.bpp, &mlx.size_line, &mlx.endian);
 
     Sphere sphere = {{0, 0, -5}, 1, {1, 0, 0}}; // Red sphere
+    Plane plane = {{0, -1, 0}, {0, 1, 0}, {0, 1, 0}}; // Green plane
+    Cylinder cylinder = {{2, 0, -6}, {0, 1, 0}, 0.5, 2, {0, 0, 1}}; // Blue cylinder
     Light light = {{5, 5, -5}, {1, 1, 1}, 0.9}; // Bright white light
 
+    // Adjust camera to look down from above
     Camera camera = {
-        .pos = {0, 0, 0},
-        .forward = {0, 0, -1},
-        .up = {0, 1, 0},
-        .right = {1, 0, 0}};
+        .pos = {2, 10, -6},  // Position high above the scene
+        .forward = {0, -1, 0},  // Looking straight down
+        .up = {0, 0, 1},  // Up vector is now pointing towards positive Z
+        .right = {1, 0, 0}  // Right vector remains the same
+    };
 
-    draw_scene(&mlx, sphere, light, camera);
+    draw_scene(&mlx, sphere, plane, cylinder, light, camera);
 
     mlx_put_image_to_window(mlx.mlx, mlx.win, mlx.img, 0, 0);
     mlx_hook(mlx.win, 2, 1L << 0, handle_keypress, &mlx); // Key press event
