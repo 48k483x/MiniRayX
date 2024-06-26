@@ -64,7 +64,7 @@ typedef struct s_vec3
 typedef struct s_amb
 {
 	double		intensity;
-	int			color;
+	t_vec3			color;
 }				t_amb;
 
 typedef struct s_cam
@@ -85,7 +85,7 @@ typedef struct s_sph
 {
 	t_vec3		origin;
 	double		diameter;
-	int			color;
+	t_vec3			color;
 }				t_sph;
 
 typedef struct s_pla
@@ -167,6 +167,7 @@ typedef struct s_render
 {
 	t_camera	cam;
 	t_ray		ray;
+	t_vec3		color;
 	double		px;
 	double		py;
 	int			x;
@@ -184,6 +185,14 @@ typedef struct sphere
 	double	t2;
 	t_vec3	oc;
 }	t_sphere;
+
+typedef struct	s_inter
+{
+	double		t;
+	t_vec3		normal;
+	t_vec3		hit;
+	t_vec3			color;
+}				t_inter;
 
 // Structures Parsing
 
@@ -241,6 +250,9 @@ void	free_all_l(t_scene *scene);
 
 // RAYTRACE FUNCTIONS
 
+// RAYTRACE COLOR FUNCTIONS
+t_vec3 ray_color(t_scene *scene, t_ray *ray, char **sc);
+
 // RAYTRACE CAMERA FUNCTIONS
 int esc_key(int key, t_mlx *mlx);
 t_camera set_camera(t_scene *scene);
@@ -248,6 +260,12 @@ t_ray set_ray(t_camera *cam, double x, double y);
 
 // RAYTRACE FILE FUNCTIONS
 void	ft_render(t_scene *scene, t_mlx *mlx);
+
+// RAYTRACE INTER FUNCTIONS
+t_inter	intersect(t_scene *scene, t_ray *ray, char **tab);
+
+// RAYTRACE SUFRFACE NORMAL FUNCTIONS
+t_inter sphere_normal(t_inter hold, t_scene *scene, t_ray *ray);
 
 #endif
 

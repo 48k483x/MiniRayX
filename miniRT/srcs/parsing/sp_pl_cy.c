@@ -45,7 +45,7 @@ int fill_sphere(t_sph *sph, char *line)
 		free_tab(tab);
 		return error(COLOR);
 	}
-	sph->color = color;
+	sph->color = (t_vec3){_atof(col[0]), _atof(col[1]), _atof(col[2])};
 	free_tab(ori);
 	free_tab(col);
 	free_tab(tab);

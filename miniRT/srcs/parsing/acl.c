@@ -52,7 +52,7 @@ int	fill_amb(t_amb *amb, char *line)
 	if (!is_digitf(tab[1]) || (_atof(tab[1]) < 0 || _atof(tab[1]) > 1))
 		return em_free(INTENSITY, tab, colors, NULL);
 	amb->intensity = _atof(tab[1]);
-	amb->color = color;
+	amb->color = (t_vec3){_atof(colors[0]), _atof(colors[1]), _atof(colors[2])};
 	free_tab(colors);
 	free_tab(tab);
 	return (1);

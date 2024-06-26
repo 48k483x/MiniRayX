@@ -20,8 +20,7 @@ void    ft_draw(t_scene *scene, t_mlx *mlx, t_render *render)
             render->px = 2 * ((double)render->x + 0.5) / ((double)WIDTH - 1)* render->cam.aspratio * render->scale;
             render->py = 1 - 2 * ((double)render->y + 0.5) / ((double)HEIGHT - 1) * render->scale;
             render->ray = set_ray(&render->cam, render->px, render->py);
-            printf("ray origin: %f %f %f\n", render->ray.origin.x, render->ray.origin.y, render->ray.origin.z);
-            printf("ray dir: %f %f %f\n", render->ray.dir.x, render->ray.dir.y, render->ray.dir.z);
+            render->color = ray_color(scene, &render->ray);
             my_mlx_pixel_put(mlx, render->x, render->y, 0x00FF0000);
         }
     }
