@@ -1,5 +1,14 @@
 #include "miniRT.h"
 
+// Global camera definition
+Camera camera = {
+    .pos = {1, 2, 0},
+    .forward = {0, -0.5, -1},
+    .up = {0, 1, 0},
+    .right = {1, 0, 0}
+};
+
+
 void put_pixel(MLX *mlx, int x, int y, int color)
 {
     int index = (x * mlx->bpp / 8) + (y * mlx->size_line);
@@ -82,14 +91,11 @@ void draw_scene(MLX *mlx, Sphere sphere, Plane plane, Cylinder cylinder, Light l
     }
 }
 
-int handle_keypress(int keycode, MLX *mlx)
+int handle_keypress(int keycode, Hook_params *params)
 {
-    static Camera camera = {
-        .pos = {2, 10, -6},
-        .forward = {0, -1, 0},
-        .up = {0, 0, 1},
-        .right = {1, 0, 0}
-    };
+    MLX *mlx = params->mlx;
+    Camera *camera = params->camera;
+
     const float move_speed = 0.5;
     const float rotate_speed = 0.1;
 
@@ -99,30 +105,30 @@ int handle_keypress(int keycode, MLX *mlx)
         exit(0);
     }
     else if (keycode == W_KEY)
-        camera.pos = vec3_add(camera.pos, vec3_scale(camera.forward, move_speed));
+        camera->pos = vec3_add(camera->pos, vec3_scale(camera->forward, move_speed));
     else if (keycode == S_KEY)
-        camera.pos = vec3_add(camera.pos, vec3_scale(camera.forward, -move_speed));
+        camera->pos = vec3_add(camera->pos, vec3_scale(camera->forward, -move_speed));
     else if (keycode == A_KEY)
-        camera.pos = vec3_add(camera.pos, vec3_scale(camera.right, -move_speed));
+        camera->pos = vec3_add(camera->pos, vec3_scale(camera->right, -move_speed));
     else if (keycode == D_KEY)
-        camera.pos = vec3_add(camera.pos, vec3_scale(camera.right, move_speed));
+        camera->pos = vec3_add(camera->pos, vec3_scale(camera->right, move_speed));
     else if (keycode == UP)
-        camera.pos = vec3_add(camera.pos, vec3_scale(camera.up, move_speed));
+        camera->pos = vec3_add(camera->pos, vec3_scale(camera->up, move_speed));
     else if (keycode == DOWN)
-        camera.pos = vec3_add(camera.pos, vec3_scale(camera.up, -move_speed));
+        camera->pos = vec3_add(camera->pos, vec3_scale(camera->up, -move_speed));
     else if (keycode == LEFT)
     {
-        camera.forward = vec3_normalize(vec3_add(
-            vec3_scale(camera.forward, cos(rotate_speed)),
-            vec3_scale(camera.right, -sin(rotate_speed))));
-        camera.right = vec3_cross(camera.forward, camera.up);
+        camera->forward = vec3_normalize(vec3_add(
+            vec3_scale(camera->forward, cos(rotate_speed)),
+            vec3_scale(camera->right, -sin(rotate_speed))));
+        camera->right = vec3_cross(camera->forward, camera->up);
     }
     else if (keycode == RIGHT)
     {
-        camera.forward = vec3_normalize(vec3_add(
-            vec3_scale(camera.forward, cos(rotate_speed)),
-            vec3_scale(camera.right, sin(rotate_speed))));
-        camera.right = vec3_cross(camera.forward, camera.up);
+        camera->forward = vec3_normalize(vec3_add(
+            vec3_scale(camera->forward, cos(rotate_speed)),
+            vec3_scale(camera->right, sin(rotate_speed))));
+        camera->right = vec3_cross(camera->forward, camera->up);
     }
 
     Sphere sphere = {{0, 0, -5}, 1, {1, 0, 0}};
@@ -130,7 +136,7 @@ int handle_keypress(int keycode, MLX *mlx)
     Cylinder cylinder = {{2, 0, -6}, {0, 1, 0}, 0.5, 2, {0, 0, 1}};
     Light light = {{5, 5, -5}, {1, 1, 1}, 0.9};
 
-    draw_scene(mlx, sphere, plane, cylinder, light, camera);
+    draw_scene(mlx, sphere, plane, cylinder, light, *camera);
     mlx_put_image_to_window(mlx->mlx, mlx->win, mlx->img, 0, 0);
     return 0;
 }
@@ -157,19 +163,13 @@ int main()
     Cylinder cylinder = {{2, 0, -6}, {0, 1, 0}, 0.5, 2, {0, 0, 1}}; // Blue cylinder
     Light light = {{5, 5, -5}, {1, 1, 1}, 0.9}; // Bright white light
 
-    // Camera setup for top-down view
-    Camera camera = {
-        .pos = {2, 10, -6},  // Position high above the scene
-        .forward = {0, -1, 0},  // Looking straight down
-        .up = {0, 0, 1},  // Up vector is now pointing towards positive Z
-        .right = {1, 0, 0}  // Right vector remains the same
-    };
-
     draw_scene(&mlx, sphere, plane, cylinder, light, camera);
 
     mlx_put_image_to_window(mlx.mlx, mlx.win, mlx.img, 0, 0);
-    mlx_hook(mlx.win, 2, 1L << 0, handle_keypress, &mlx); // Key press event
-    mlx_hook(mlx.win, 17, 0, handle_close, &mlx);         // Window close event
+    
+    Hook_params params = {&mlx, &camera};
+    mlx_hook(mlx.win, 2, 1L << 0, (int (*)(int, void *))handle_keypress, &params);
+    mlx_hook(mlx.win, 17, 0, handle_close, &mlx); // Window close event
     mlx_loop(mlx.mlx);
 
     return 0;

@@ -83,7 +83,7 @@ typedef struct {
     Vec3 up;
     Vec3 right;
 } Camera;
-
+extern Camera camera;
 // MLX structure
 typedef struct {
     void *mlx;
@@ -121,7 +121,12 @@ int get_color(Vec3 color);
 void draw_scene(MLX *mlx, Sphere sphere, Plane plane, Cylinder cylinder, Light light, Camera camera);
 
 // Event handling
-int handle_keypress(int keycode, MLX *mlx);
+// In miniRT.h
+typedef struct {
+    MLX *mlx;
+    Camera *camera;
+} Hook_params;
+int handle_keypress(int keycode, Hook_params *params);
 int handle_close(MLX *mlx);
 
 #endif
