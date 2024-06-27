@@ -2,12 +2,11 @@
 
 // Global camera definition
 Camera camera = {
-    .pos = {1, 2, 0},
-    .forward = {0, -0.5, -1},
+    .pos = {0, 0, 15},
+    .forward = {0, 0, 1},
     .up = {0, 1, 0},
     .right = {1, 0, 0}
 };
-
 
 void put_pixel(MLX *mlx, int x, int y, int color)
 {
@@ -25,7 +24,7 @@ int get_color(Vec3 color)
     return (r << 16) | (g << 8) | b;
 }
 
-void draw_scene(MLX *mlx, Sphere sphere, Plane plane, Cylinder cylinder, Light light, Camera camera)
+void draw_scene(MLX *mlx, Sphere sphere, Plane plane1, Plane plane2, Light light, Camera camera, float ambient_intensity, Vec3 ambient_color)
 {
     float aspect_ratio = (float)mlx->width / (float)mlx->height;
     float scale = tan(FOV * 0.5 * M_PI / 180);
@@ -43,12 +42,12 @@ void draw_scene(MLX *mlx, Sphere sphere, Plane plane, Cylinder cylinder, Light l
                 px * camera.right.z + py * camera.up.z + camera.forward.z});
             Ray ray = {camera.pos, ray_dir};
 
-            float t_sphere, t_plane, t_cylinder;
+            float t_sphere, t_plane1, t_plane2;
             int hit_sphere = ray_intersect_sphere(ray, sphere, &t_sphere);
-            int hit_plane = ray_intersect_plane(ray, plane, &t_plane);
-            int hit_cylinder = ray_intersect_cylinder(ray, cylinder, &t_cylinder);
+            int hit_plane1 = ray_intersect_plane(ray, plane1, &t_plane1);
+            int hit_plane2 = ray_intersect_plane(ray, plane2, &t_plane2);
 
-            if (hit_sphere || hit_plane || hit_cylinder)
+            if (hit_sphere || hit_plane1 || hit_plane2)
             {
                 float t = INFINITY;
                 Vec3 color;
@@ -62,25 +61,27 @@ void draw_scene(MLX *mlx, Sphere sphere, Plane plane, Cylinder cylinder, Light l
                     point = vec3_add(ray.origin, vec3_scale(ray.direction, t));
                     normal = vec3_normalize(vec3_sub(point, sphere.center));
                 }
-                if (hit_plane && t_plane < t)
+                if (hit_plane1 && t_plane1 < t)
                 {
-                    t = t_plane;
-                    color = plane.color;
+                    t = t_plane1;
+                    color = plane1.color;
                     point = vec3_add(ray.origin, vec3_scale(ray.direction, t));
-                    normal = plane.normal;
+                    normal = plane1.normal;
                 }
-                if (hit_cylinder && t_cylinder < t)
+                if (hit_plane2 && t_plane2 < t)
                 {
-                    t = t_cylinder;
-                    color = cylinder.color;
+                    t = t_plane2;
+                    color = plane2.color;
                     point = vec3_add(ray.origin, vec3_scale(ray.direction, t));
-                    Vec3 co = vec3_sub(point, cylinder.center);
-                    Vec3 projection = vec3_scale(cylinder.axis, vec3_dot(co, cylinder.axis));
-                    normal = vec3_normalize(vec3_sub(co, projection));
+                    normal = plane2.normal;
                 }
 
                 Vec3 view_dir = vec3_scale(ray.direction, -1);
-                Vec3 final_color = calculate_lighting(point, normal, view_dir, light, color, sphere, plane, cylinder);
+                Vec3 final_color = calculate_lighting(point, normal, view_dir, light, color, sphere, plane1, plane2);
+                
+                // Apply ambient lighting
+                final_color = vec3_add(final_color, vec3_multiply(color, vec3_scale(ambient_color, ambient_intensity)));
+                
                 put_pixel(mlx, x, y, get_color(final_color));
             }
             else
@@ -95,6 +96,7 @@ int handle_keypress(int keycode, Hook_params *params)
 {
     MLX *mlx = params->mlx;
     Camera *camera = params->camera;
+    Scene *scene = params->scene;
 
     const float move_speed = 0.5;
     const float rotate_speed = 0.1;
@@ -131,12 +133,7 @@ int handle_keypress(int keycode, Hook_params *params)
         camera->right = vec3_cross(camera->forward, camera->up);
     }
 
-    Sphere sphere = {{0, 0, -5}, 1, {1, 0, 0}};
-    Plane plane = {{0, -1, 0}, {0, 1, 0}, {0, 1, 0}};
-    Cylinder cylinder = {{2, 0, -6}, {0, 1, 0}, 0.5, 2, {0, 0, 1}};
-    Light light = {{5, 5, -5}, {1, 1, 1}, 0.9};
-
-    draw_scene(mlx, sphere, plane, cylinder, light, *camera);
+    draw_scene(mlx, scene->sphere, scene->plane1, scene->plane2, scene->light, *camera, scene->ambient_intensity, scene->ambient_color);
     mlx_put_image_to_window(mlx->mlx, mlx->win, mlx->img, 0, 0);
     return 0;
 }
@@ -158,16 +155,27 @@ int main()
     mlx.img = mlx_new_image(mlx.mlx, mlx.width, mlx.height);
     mlx.data = mlx_get_data_addr(mlx.img, &mlx.bpp, &mlx.size_line, &mlx.endian);
 
-    Sphere sphere = {{0, 0, -5}, 1, {1, 0, 0}}; // Red sphere
-    Plane plane = {{0, -1, 0}, {0, 1, 0}, {0, 1, 0}}; // Green plane
-    Cylinder cylinder = {{2, 0, -6}, {0, 1, 0}, 0.5, 2, {0, 0, 1}}; // Blue cylinder
-    Light light = {{5, 5, -5}, {1, 1, 1}, 0.9}; // Bright white light
+    Scene scene;
 
-    draw_scene(&mlx, sphere, plane, cylinder, light, camera);
+    // Ambient light (A)
+    scene.ambient_intensity = 0.2;
+    scene.ambient_color = (Vec3){1.0, 1.0, 1.0}; // 255,255,255 normalized to 0-1 range
+
+    // Light (L)
+    scene.light = (Light){{-20, 5, 40}, {1, 1, 1}, 0.6};
+
+    // Sphere (sp)
+    scene.sphere = (Sphere){{0, 0, 30}, 2.5, {1, 0, 0}}; // radius is 5/2 because the scene uses diameter
+
+    // Planes (pl)
+    scene.plane1 = (Plane){{0, -2.5, 0}, {0, 1, 0}, {0, 1, 1}}; // 0,255,255 normalized to 0-1 range
+    scene.plane2 = (Plane){{0, 0, 50}, {0, 0, 1}, {0.498, 0.514, 0.737}}; // 127,131,188 normalized to 0-1 range
+
+    draw_scene(&mlx, scene.sphere, scene.plane1, scene.plane2, scene.light, camera, scene.ambient_intensity, scene.ambient_color);
 
     mlx_put_image_to_window(mlx.mlx, mlx.win, mlx.img, 0, 0);
     
-    Hook_params params = {&mlx, &camera};
+    Hook_params params = {&mlx, &camera, &scene};
     mlx_hook(mlx.win, 2, 1L << 0, (int (*)(int, void *))handle_keypress, &params);
     mlx_hook(mlx.win, 17, 0, handle_close, &mlx); // Window close event
     mlx_loop(mlx.mlx);

@@ -1,20 +1,20 @@
 #include "miniRT.h"
 #include <math.h>
 
-int is_in_shadow(Ray shadow_ray, Sphere sphere, Plane plane, Cylinder cylinder, float light_distance)
+int is_in_shadow(Ray shadow_ray, Sphere sphere, Plane plane1, Plane plane2, float light_distance)
 {
     float t;
     if (ray_intersect_sphere(shadow_ray, sphere, &t) && t > 0.001 && t < light_distance)
         return 1;
-    if (ray_intersect_plane(shadow_ray, plane, &t) && t > 0.001 && t < light_distance)
+    if (ray_intersect_plane(shadow_ray, plane1, &t) && t > 0.001 && t < light_distance)
         return 1;
-    if (ray_intersect_cylinder(shadow_ray, cylinder, &t) && t > 0.001 && t < light_distance)
+    if (ray_intersect_plane(shadow_ray, plane2, &t) && t > 0.001 && t < light_distance)
         return 1;
     return 0;
 }
 
 Vec3 calculate_lighting(Vec3 point, Vec3 normal, Vec3 view_dir, Light light, Vec3 object_color, 
-                        Sphere sphere, Plane plane, Cylinder cylinder)
+                        Sphere sphere, Plane plane1, Plane plane2)
 {
     // Normalize vectors
     normal = vec3_normalize(normal);
@@ -31,7 +31,7 @@ Vec3 calculate_lighting(Vec3 point, Vec3 normal, Vec3 view_dir, Light light, Vec
 
     // Check for shadows
     Ray shadow_ray = {point, light_dir};
-    if (is_in_shadow(shadow_ray, sphere, plane, cylinder, light_distance))
+    if (is_in_shadow(shadow_ray, sphere, plane1, plane2, light_distance))
     {
         // If in shadow, only return ambient light
         return ambient;
