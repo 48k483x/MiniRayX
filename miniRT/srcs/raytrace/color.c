@@ -43,5 +43,5 @@ t_vec3  ray_color(t_scene *scene, t_ray *ray, char **sc)
         printf("pixel color: %f %f %f\n", pixel_clr.x, pixel_clr.y, pixel_clr.z);
         return (pixel_clr);
     }
-    return(vec3_scale(scene->amb.color, scene->amb.intensity));
+    return((t_vec3){0, 0, 0});
 }
