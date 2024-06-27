@@ -110,7 +110,7 @@ int fill_planet(t_pla *pla, char *line)
 		free_tab(col);
 		return error(COLOR);
 	}
-	pla->color = color;
+	pla->color = (t_vec3){_atof(col[0]), _atof(col[1]), _atof(col[2])};
 	free_tab(ori);
 	free_tab(nor);
 	free_tab(col);
@@ -193,7 +193,7 @@ int fill_cylindre(t_cyl *cyl, char *line)
 		free_tab(tab);
 		return error(COLOR);
 	}
-	cyl->color = color;
+	cyl->color = (t_vec3){_atof(col[0]), _atof(col[1]), _atof(col[2])};
 	free_tab(ori);
 	free_tab(nor);
 	free_tab(col);

@@ -7,7 +7,8 @@ SRC = miniRT.c \
 	srcs/parsing/print_scene.c \
 	srcs/parsing/acl.c srcs/parsing/select.c srcs/parsing/sp_pl_cy.c srcs/parsing/get_scene.c\
 	srcs/ray_gen/vector.c \
-	srcs/raytrace/camera.c srcs/raytrace/raytrace.c srcs/raytrace/intersection.c
+	srcs/raytrace/camera.c srcs/raytrace/raytrace.c srcs/raytrace/intersection.c \
+	srcs/raytrace/inter.c srcs/raytrace/color.c srcs/raytrace/lighting.c srcs/raytrace/surface_normal.c
 
 NAME = miniRT
 OBJ = $(SRC:.c=.o)

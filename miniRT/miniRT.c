@@ -14,7 +14,8 @@ int main(int ac, char *av[]) {
         return error_main("Scene must contain one A, one C and one L", sc);
     if (!selecte(&scene, sc))
         return error_main("Error in scene file", sc);
-    ft_render(&scene, &mlx);
+    print_scene(&scene);
+    ft_render(&scene, &mlx, sc);
     free_all_l(&scene);
     free_tab(sc);
 }

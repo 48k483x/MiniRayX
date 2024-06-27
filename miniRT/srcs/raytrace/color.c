@@ -22,12 +22,26 @@ t_vec3  ray_color(t_scene *scene, t_ray *ray, char **sc)
     t_vec3  amb;
 
     inter = intersect(scene, ray, sc);
+    // printf("inter.t: %f\n", inter.t);
     if (inter.t > ESP)
     {
         amb = add_coef(inter.color, scene->amb.color, scene->amb.intensity);
         if (is_inside(ray->dir, inter.normal))
             inter.normal = vec3_scale(inter.normal, -1);
-        pixel_clr = calculate_light;
-
+        t_light_params params = {
+            .point = inter.hit,
+            .normal = inter.normal,
+            .view_dir = vec3_scale(ray->dir, -1),
+            .light = scene->light,
+            .object_color = inter.color,
+            .spheres = scene->sph,
+            .planes = scene->pla,
+            .cylinders = scene->cyl,
+        };
+        printf("object color: %f %f %f\n", inter.color.x, inter.color.y, inter.color.z);
+        pixel_clr = calculate_light(params);
+        printf("pixel color: %f %f %f\n", pixel_clr.x, pixel_clr.y, pixel_clr.z);
+        return (pixel_clr);
     }
+    return(vec3_scale(scene->amb.color, scene->amb.intensity));
 }

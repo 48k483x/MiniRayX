@@ -113,7 +113,7 @@ int	fill_light(t_light *light, char *line)
 	color = get_color((t_vec3){_atof(colors[0]), _atof(colors[1]), _atof(colors[2])});
 	if (color == -1)
 		return em_free(COLOR, ori, colors, tab);
-	light->color = color;
+	light->color = (t_vec3){_atof(colors[0]), _atof(colors[1]), _atof(colors[2])};
 	free_tab(ori);
 	free_tab(colors);
 	free_tab(tab);

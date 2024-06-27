@@ -33,7 +33,7 @@
 
 #else
 	#error "Unsupported operating system"
-#endif
+#endif // __APPLE__ or __linux__
 
 # define DOTRT_ERR "Error\nThe scene file must have a .rt extension.\n"
 # define FDNM_ERR "Error\nOne of the normal map file cannot be access.\n"
@@ -78,7 +78,7 @@ typedef struct s_light
 {
 	t_vec3		origin;
 	double		intensity;
-	int			color;// RGB color not used in mendatory part
+	t_vec3			color;// RGB color not used in mendatory part
 }				t_light;
 
 typedef struct s_sph
@@ -92,7 +92,7 @@ typedef struct s_pla
 {
 	t_vec3		origin;
 	t_vec3		normal;
-	int			color;
+	t_vec3			color;
 }				t_pla;
 
 typedef struct s_cyl
@@ -101,7 +101,7 @@ typedef struct s_cyl
 	t_vec3		normal;
 	double		diameter;
 	double		height;
-	int			color;
+	t_vec3			color;
 }				t_cyl;
 
 typedef struct s_sph_l
@@ -194,6 +194,19 @@ typedef struct	s_inter
 	t_vec3			color;
 }				t_inter;
 
+typedef struct s_light_params {
+    t_vec3 point;
+    t_vec3 normal;
+    t_vec3 view_dir;
+    t_vec3 object_color;
+    t_light light;
+    t_sph_l *spheres;
+    t_pla_l *planes;
+    t_cyl_l *cylinders;
+} t_light_params;
+
+
+
 // Structures Parsing
 
 // Library functions error.c
@@ -259,13 +272,19 @@ t_camera set_camera(t_scene *scene);
 t_ray set_ray(t_camera *cam, double x, double y);
 
 // RAYTRACE FILE FUNCTIONS
-void	ft_render(t_scene *scene, t_mlx *mlx);
+void	ft_render(t_scene *scene, t_mlx *mlx, char **sc);
 
 // RAYTRACE INTER FUNCTIONS
 t_inter	intersect(t_scene *scene, t_ray *ray, char **tab);
 
+// RAYTRACE SPHERE FUNCTIONS
+double inter_sphere(t_ray *ray, t_sph *sph);
+
 // RAYTRACE SUFRFACE NORMAL FUNCTIONS
 t_inter sphere_normal(t_inter hold, t_scene *scene, t_ray *ray);
+
+// RAYTRACE LIGHT FUNCTIONS
+t_vec3 calculate_light(t_light_params params);
 
 #endif
 

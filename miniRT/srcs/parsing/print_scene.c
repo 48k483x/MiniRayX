@@ -12,7 +12,8 @@ void print_sphere_list(t_sph_l *sph) {
         printf("    Origin: ");
         print_vec3(tmp->sph.origin);
         printf("    Diameter: %.2f\n", tmp->sph.diameter);
-        printf("    Color: %d\n", tmp->sph.color);
+        printf("    Color: ");
+        print_vec3(tmp->sph.color);
         tmp = tmp->next;
         index++;
         if (tmp) printf("  -------------------------\n");
@@ -27,7 +28,8 @@ void print_plane_list(t_pla_l *pla) {
         print_vec3(pla->pla.origin);
         printf("    Normal: ");
         print_vec3(pla->pla.normal);
-        printf("    Color: %d\n", pla->pla.color);
+        printf("    Color: ");
+        print_vec3(pla->pla.color);
         pla = pla->next;
         index++;
         if (pla) printf("  -------------------------\n");
@@ -44,7 +46,8 @@ void print_cylinder_list(t_cyl_l *cyl) {
         print_vec3(cyl->cyl.normal);
         printf("    Diameter: %.2f\n", cyl->cyl.diameter);
         printf("    Height: %.2f\n", cyl->cyl.height);
-        printf("    Color: %d\n", cyl->cyl.color);
+        printf("    Color: \n");
+        print_vec3(cyl->cyl.color);
         cyl = cyl->next;
         index++;
         if (cyl) printf("  -------------------------\n");
@@ -54,7 +57,8 @@ void print_cylinder_list(t_cyl_l *cyl) {
 void print_scene(t_scene *scene) {
     printf("Ambient Light:\n");
     printf("  Intensity: %.2f\n", scene->amb.intensity);
-    printf("  Color: %d\n", scene->amb.color);
+    printf("  Color: ");
+    print_vec3(scene->amb.color);
     printf("\n");
 
     printf("Camera:\n");
@@ -69,7 +73,8 @@ void print_scene(t_scene *scene) {
     printf("  Origin: ");
     print_vec3(scene->light.origin);
     printf("  Intensity: %.2f\n", scene->light.intensity);
-    printf("  Color: %d\n", scene->light.color);
+    printf("  Color: ");
+    print_vec3(scene->light.color);
     printf("\n");
 
     printf("Spheres:\n");

@@ -11,8 +11,9 @@ t_inter intersect(t_scene *scene, t_ray *ray, char **tab)
     i = -1;
     while (tab[++i])
     {
-        if (tab[i][0] == 's' && tab[i][1] == 'p')
+        if (tab[i][0] == 's' && sc->sph)
         {
+            printf("sphere\n");
             hold = sphere_normal(hold, sc, ray);
             sc->sph = sc->sph->next;
         }
