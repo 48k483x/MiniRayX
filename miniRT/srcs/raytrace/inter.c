@@ -9,24 +9,14 @@ t_inter intersect(t_scene *scene, t_ray *ray, char **tab)
     sc = scene;
     hold.t = -1;
     i = -1;
+    t_sph_l *sph = scene->sph;
     while (tab[++i])
     {
-        if (tab[i][0] == 's' && sc->sph)
+        if (tab[i][0] == 's' && sph)
         {
-            printf("sphere\n");
             hold = sphere_normal(hold, sc, ray);
-            sc->sph = sc->sph->next;
+            sph = sph->next;
         }
-        // if (tab[i][0] == 'p' && tab[i][1] == 'l')
-        // {
-        //     hold = inter_plane(ray, sc->pl);
-        //     sc->pl = sc->pl->next;
-        // }
-        // if (tab[i][0] == 't')
-        // {
-        //     hold = inter_cylinder(ray, sc->cyl);
-        //     sc->cyl = sc->cyl->next;
-        // }
     }
     return (hold);
 }
