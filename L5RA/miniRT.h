@@ -62,6 +62,9 @@
 # define PL 2
 # define CY 3
 
+# define EPS 0.000001
+
+
 # define HEIGHT 800
 # define WIDTH 1200
 
@@ -144,4 +147,20 @@ void	ft_draw(t_scene *sc, t_render *render, t_mlx *mlx);
 
 // MLX FUNCTIONS
 void	my_mlx_put_pixel(t_mlx *mlx, int x, int y, int color);
+
+// RAY COLOR FUNCTIONS
+t_vec3	ray_color(t_scene *sc, t_ray *ray);
+int get_color(t_vec3 col);
+
+// INTERSECT FUNCTIONS
+double	inter_sphere(t_ray *ray, t_objs *sp);
+double	inter_plane(t_ray *ray, t_objs *pl);
+
+// SURFACE NORMAL FUNCTIONS
+t_inter	spher_normal(t_inter hold, t_objs *obj, t_ray *ray);
+t_inter	plane_normal(t_inter hold, t_objs *obj, t_ray *ray);
+
+// WORLD INTERSECT FUNCTIONS
+t_inter find_inter(t_scene *sc, t_ray *ray);
+
 #endif

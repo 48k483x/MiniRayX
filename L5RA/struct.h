@@ -73,6 +73,12 @@ typedef struct s_scene
 	t_vec3		col;
 }				t_scene;
 
+typedef struct	s_ray
+{
+	t_vec3	orig;
+	t_vec3	dir;
+}				t_ray;
+
 typedef	struct	s_camera
 {
 	t_vec3	orig;
@@ -92,6 +98,8 @@ typedef struct	s_render
 	int		y;
 	double	u;
 	double	v;
+	t_ray	ray;
+	t_vec3	ray_col;
 }			t_render;
 
 typedef struct	s_mlx
@@ -105,10 +113,24 @@ typedef struct	s_mlx
 	int		endian;
 }				t_mlx;
 
-typedef struct	s_ray
+
+typedef struct s_inter
 {
-	t_vec3	orig;
-	t_vec3	dir;
-}				t_ray;
+	double	t;
+	t_vec3	col;
+	t_vec3	hit;
+	t_vec3	norm;
+}		t_inter;
+
+typedef struct sphere
+{
+	double	a;
+	double	b;
+	double	c;
+	double	t;
+	double	t1;
+	double	t2;
+	t_vec3	oc;
+}	t_sphere;
 
 #endif

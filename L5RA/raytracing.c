@@ -15,8 +15,9 @@ void	ft_draw(t_scene *sc, t_render *render, t_mlx *mlx)
 			render->u = (2 * (render->x + 0.5) / (double)WIDTH - 1) * \
 				render->cam.aspect_r * scale;
 			render->v = (1 - 2 * (render->y + 0.5) / (double)HEIGHT) * scale;
-			t_ray ray = ray_primary(&render->cam, render->u, render->v);
- 			my_mlx_put_pixel(mlx, render->x, render->y, 0x00FF0000);
+			render->ray = ray_primary(&render->cam, render->u, render->v);
+			render->ray_col = ray_color(sc, &render->ray);
+ 			my_mlx_put_pixel(mlx, render->x, render->y, get_color(render->ray_col));
 		}
 	}
 }

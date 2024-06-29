@@ -71,6 +71,7 @@
     "mlx.h": "c",
     "stdio.h": "c",
     "unistd.h": "c",
-    "gnl.h": "c"
+    "gnl.h": "c",
+    "stdlib.h": "c"
   }
 }

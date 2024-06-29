@@ -1,20 +1,24 @@
 FLAGS = -g
 
-SRC =	miniRT.c 	\
-		gnl.c 		\
-		gnl_utils.c \
-		get_scene.c \
-		get_colors.c\
-		acl.c 		\
-		split.c 	\
-		libft.c 	\
-		select.c 	\
-		select_2.c 	\
-		spcypl.c	\
-		camera.c 	\
-		raytracing.c\
-		vecteurs.c 	\
-		mlx_func.c 	\
+SRC =	miniRT.c 		\
+		gnl.c 			\
+		gnl_utils.c 	\
+		get_scene.c 	\
+		get_colors.c	\
+		acl.c 			\
+		split.c 		\
+		libft.c 		\
+		select.c 		\
+		select_2.c 		\
+		spcypl.c		\
+		camera.c 		\
+		raytracing.c	\
+		vecteurs.c 		\
+		mlx_func.c 		\
+		color.c 		\
+		surface_normal.c\
+		world.c 		\
+		intersection.c 	\
 	
 
 NAME = miniRT
