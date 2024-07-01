@@ -1,14 +1,14 @@
 FLAGS = -g
 
-SRC = miniRT.c \
-	srcs/gnl/gnl.c srcs/gnl/gnl_utils.c \
-	srcs/utils/libft.c srcs/utils/split.c \
-	srcs/utils/error.c \
-	srcs/parsing/print_scene.c \
-	srcs/parsing/acl.c srcs/parsing/select.c srcs/parsing/sp_pl_cy.c srcs/parsing/get_scene.c\
-	srcs/ray_gen/vector.c \
-	srcs/raytrace/camera.c srcs/raytrace/raytrace.c srcs/raytrace/intersection.c \
-	srcs/raytrace/inter.c srcs/raytrace/color.c srcs/raytrace/lighting.c srcs/raytrace/surface_normal.c
+SRC = 	 mandatory/main.c mandatory/allocation.c  \
+         mandatory/split.c mandatory/vector.c mandatory/normal_vector.c \
+         mandatory/vector2.c mandatory/ray_tracing.c  \
+         mandatory/Garbage_Collector.c mandatory/intersection.c \
+         mandatory/mlx_func.c mandatory/camera.c mandatory/color.c \
+         mandatory/surface_normale.c mandatory/world.c mandatory/libft_2.c \
+         mandatory/shading.c mandatory/gnl.c mandatory/gnl_utils.c \
+         mandatory/select.c mandatory/select_2.c mandatory/acl.c \
+         mandatory/spcypl.c mandatory/libft.c mandatory/get_scene.c
 
 NAME = miniRT
 OBJ = $(SRC:.c=.o)
