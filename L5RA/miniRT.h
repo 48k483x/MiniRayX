@@ -54,8 +54,8 @@
 # define ORIGIN_ERR		"origin must have 3 coordinates"
 # define ARG_ERR		"Invalid number of arguments"
 # define M_PI			3.14159265358979323846
-# define WIDTH			1200
-# define HEIGHT			800
+# define WIDTH			800
+# define HEIGHT			600
 # define ESP			0.000001
 
 # define SP 1
@@ -63,11 +63,6 @@
 # define CY 3
 
 # define EPS 0.000001
-
-
-# define HEIGHT 800
-# define WIDTH 1200
-
 
 // GET SCENE
 char	**add_to_map(char **scene, char *new_line);
@@ -151,6 +146,7 @@ void	my_mlx_put_pixel(t_mlx *mlx, int x, int y, int color);
 // RAY COLOR FUNCTIONS
 t_vec3	ray_color(t_scene *sc, t_ray *ray);
 int get_color(t_vec3 col);
+t_vec3	add_coef(t_vec3 col1, t_vec3 col2, double ratio);
 
 // INTERSECT FUNCTIONS
 double	inter_sphere(t_ray *ray, t_objs *sp);
@@ -162,5 +158,9 @@ t_inter	plane_normal(t_inter hold, t_objs *obj, t_ray *ray);
 
 // WORLD INTERSECT FUNCTIONS
 t_inter find_inter(t_scene *sc, t_ray *ray);
+
+// SHADE FUNCTIONS
+int		shade(t_scene *sc, t_inter inter, t_light *light);
+t_vec3  diffuse(t_inter inter, t_light *light, double d);
 
 #endif

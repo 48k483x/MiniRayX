@@ -188,7 +188,7 @@ int fill_cylindre(t_cyl *cyl, char *line)
 	if (color == -1)
 	{
 		free_tab(ori);
-		free_tab(nor);
+		free_tab(nor);edit this an let it write only 2 numbers afer the comma2
 		free_tab(col);
 		free_tab(tab);
 		return error(COLOR);

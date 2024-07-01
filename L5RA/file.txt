@@ -1,0 +1,1264 @@
+#include "miniRT.h"
+
+int	three_check(char **tab)
+{
+	if (is_digitf(tab[0]) && is_digitf(tab[1]) && is_digitf(tab[2]))
+		return (1);
+	return (0);
+}
+
+int	em_free(char *mess, char **tab, char **tab2, char **tab3)
+{
+	if (tab)
+		free_tab(tab);
+	if (tab2)
+		free_tab(tab2);
+	if (tab3)
+		free_tab(tab3);
+    if (!mess)
+        return (1);
+    else
+	    return error(mess);
+}
+
+int	fill_amb(t_amb *amb, char *line)
+{
+	char **tab;
+	char **colors;
+	int  color;
+
+	tab = _split(line, ' ');
+    if (tab[3])
+        return em_free(ARG_ERR, tab, NULL, NULL);
+	if (_strlen(tab[0]) != 1 || tab[0][0] != 'A' || tab[0][1] != '\0')
+		return em_free("Ambiant light must start with 'A'", tab, NULL, NULL);
+	colors = _split(tab[2], ',');
+	if (!three_check(colors))
+		return em_free(COLOR, tab, colors, NULL);
+	color = get_color((t_vec3){_atof(colors[0]), _atof(colors[1]), _atof(colors[2])});
+	if (color == -1)
+		return em_free(COLOR, tab, colors, NULL);
+	if (!is_digitf(tab[1]) || (_atof(tab[1]) < 0 || _atof(tab[1]) > 1))
+		return em_free(INTENSITY, tab, colors, NULL);
+	amb->ratio = _atof(tab[1]);
+	amb->color = (t_vec3){_atof(colors[0]), _atof(colors[1]), _atof(colors[2])};
+	return (em_free(NULL, tab, colors, NULL));
+}
+
+int	fill_cam(t_cam *cam, char *line)
+{
+	char **tab;
+	char **ori;
+	char **nor;
+
+	tab = _split(line, ' ');
+    if (tab[4])
+        return em_free(ARG_ERR, tab, NULL, NULL);
+	if (_strlen(tab[0]) != 1 || tab[0][0] != 'C' || tab[0][1] != '\0')
+		return em_free("Camera must start with 'C'", tab, NULL, NULL);
+	ori = _split(tab[1], ',');
+	if (!three_check(ori))
+		return em_free(ORIGIN_ERR, ori, tab, NULL);
+	cam->origin = (t_vec3){_atof(ori[0]), _atof(ori[1]), _atof(ori[2])};
+	nor = _split(tab[2], ',');
+	if (!three_check(nor))
+		return em_free(DIR_VECTOR, ori, nor, tab);
+	if (_atof(nor[0]) < -1 || _atof(nor[0]) > 1 ||\
+		_atof(nor[1]) < -1 || _atof(nor[1]) > 1 ||\
+		_atof(nor[2]) < -1 || _atof(nor[2]) > 1)
+		return em_free(DIR_VECTOR, ori, nor, tab);
+	cam->normal = (t_vec3){_atof(nor[0]), _atof(nor[1]), _atof(nor[2])};
+	if (!is_digitf(tab[3]) || (_atof(tab[3]) < 0 || _atof(tab[3]) > 180))
+		return em_free(FOV_ERR, ori, nor, tab);
+	cam->fov = _atof(tab[3]);
+	return (em_free(NULL, ori, nor, tab));
+}
+
+int	fill_light(t_light *light, char *line)
+{
+	char **tab;
+	char **ori;
+	char **colors;
+	int color;
+
+	tab = _split(line, ' ');
+    if (tab[4])
+        return em_free(ARG_ERR, tab, NULL, NULL);
+	if (_strlen(tab[0]) != 1 || tab[0][0] != 'L' || tab[0][1] != '\0')
+		return em_free("Light must start with 'L'", tab, NULL, NULL);
+	ori = _split(tab[1], ',');
+	if (!three_check(ori))
+		return em_free(ORIGIN_ERR, ori, tab, NULL);
+	light->origin = (t_vec3){_atof(ori[0]), _atof(ori[1]), _atof(ori[2])};
+	if (!is_digitf(tab[2]) || _atof(tab[2]) < 0 || _atof(tab[2]) > 1)
+		return em_free(INTENSITY, ori, tab, NULL);
+	light->intensity = _atof(tab[2]);
+	colors = _split(tab[3], ',');
+	if (!three_check(colors))
+		return em_free(COLOR, ori, colors, tab);
+	color = get_color((t_vec3){_atof(colors[0]), _atof(colors[1]), _atof(colors[2])});
+	if (color == -1)
+		return em_free(COLOR, ori, colors, tab);
+	light->color = (t_vec3){_atof(colors[0]), _atof(colors[1]), _atof(colors[2])};
+	return (em_free(NULL, ori, colors, tab));
+}
+#include "miniRT.h"
+
+t_camera    set_camera(t_scene *sc)
+{
+    t_camera    cam;
+
+    cam.orig = sc->cam.origin;
+    cam.aspect_r = (double)WIDTH / (double)HEIGHT;
+    cam.theta = sc->cam.fov * (M_PI / 180);
+    cam.height = tan(cam.theta / 2);
+    cam.width = cam.aspect_r * cam.height;
+    cam.forward = sc->cam.normal;
+    cam.up =vec3_normalize( vec3_cross(cam.forward, (t_vec3){0, 1, 0}));
+    cam.right = vec3_normalize(vec3_cross(cam.up, cam.forward));
+    return (cam);
+}
+t_ray ray_primary(t_camera *cam, double x, double y)
+{
+    t_ray ray;
+    t_vec3 dir;
+
+    dir = vec3_normalize((t_vec3){
+        x * cam->right.x + y * cam->up.x + cam->forward.x,
+        x * cam->right.y + y * cam->up.y + cam->forward.y,
+        x * cam->right.z + y * cam->up.z + cam->forward.z
+    });
+    ray.orig = cam->orig;
+    ray.dir = dir;
+    return (ray);
+}#include "miniRT.h"
+
+t_vec3	add_coef(t_vec3 col1, t_vec3 col2, double ratio)
+{
+	t_vec3	ret;
+
+	ret.x = col1.x * (col2.x / 255) * ratio;
+	ret.y = col1.y * (col2.y / 255) * ratio;
+	ret.z = col1.z * (col2.z / 255) * ratio;
+	return (ret);
+}
+
+int	is_inside(t_vec3 ray, t_vec3 norm)
+{
+	if (vec3_dot(ray, norm) > 0)
+		return (1);
+	return (0);
+}
+
+t_vec3  ray_color(t_scene *sc, t_ray *ray)
+{
+    t_inter inter;
+    t_vec3  px_col;
+    t_vec3  amb;
+
+    inter = find_inter(sc, ray);
+    if (inter.t > EPS)
+    {
+        amb = add_coef(sc->amb.color, inter.col, sc->amb.ratio);
+        if (is_inside(ray->dir, inter.norm))
+            inter.norm = vec3_scale(inter.norm, -1);    
+        // px_col = add_coef(amb, inter.col, 1);
+        // get red
+        px_col.x = 255.0;
+        px_col.y = 0.0;
+        px_col.z = 0.0;
+        return (px_col);
+    }
+    return (t_vec3){0, 0, 0};
+}#include "miniRT.h"
+
+int	in_range(char **tab)
+{
+	if (_atof(tab[0]) > 1.0f || _atof(tab[0]) < -1.0f||\
+		_atof(tab[1]) > 1.0f || _atof(tab[1]) < -1.0f ||\
+		_atof(tab[2]) > 1.0f || _atof(tab[2]) < -1.0f)
+		return (0);
+	return (1);
+}
+
+t_vec3	make_vec(char **tab)
+{
+	t_vec3	vec;
+
+	vec.x = _atof(tab[0]);
+	vec.y = _atof(tab[1]);
+	vec.z = _atof(tab[2]);
+	return (vec);
+}
+
+void	null_vec(t_vec3 *vec)
+{
+	vec->x = 0;
+	vec->y = 0;
+	vec->z = 0;
+}
+
+int	valide_rgb(t_vec3 color)
+{
+	if (color.x < 0 || color.x > 255 || color.y < 0 \
+			|| color.y > 255 || color.z < 0 || color.z > 255)
+		return (0);
+	return (1);
+}
+
+int	get_color(t_vec3 color)
+{
+	int	r;
+	int	g;
+	int	b;
+
+	r = fmin(255, color.x * 255);
+	g = fmin(255, color.y * 255);
+	b = fmin(255, color.z * 255);
+	return (r << 16 | g << 8 | b);	
+}#include "miniRT.h"
+
+
+char	**add_to_map(char **scene, char *new_line)
+{
+	int		i;
+	int		size;
+	char	**new_map;
+
+	i = 0;
+	size = 0;
+	while (scene && scene[size])
+		size++;
+	new_map = _malloc(sizeof(char *) * (size + 2));
+	while (i < size)
+	{
+		new_map[i] = scene[i];
+		i++;
+	}
+	new_map[i] = new_line;
+	new_map[i + 1] = NULL;
+	_memdel(scene);
+	return (new_map);
+}
+
+char **get_scene(char *filename)
+{
+	char 	*line;
+	char	**scene;
+	int		fd;
+
+	scene = NULL;
+	fd = open(filename, O_RDONLY);
+	if (fd == -1)
+		return (NULL);
+	line = gnl(fd);
+	while (line)
+	{
+		if (is_space(line))
+		{
+			_memdel(line);
+			line = gnl(fd);
+			continue;
+		}
+		scene = add_to_map(scene, line);
+		line = gnl(fd);
+	}
+	close(fd);
+	return (scene);
+}
+int    alc_num(char **tab)
+{
+    char   **sc;
+    int     i;
+    int     a_count;
+    int     l_count;
+    int     c_count;
+
+	a_count = 0;
+	l_count = 0;
+	c_count = 0;
+    i = -1;
+    while (tab[++i])
+    {
+        sc = _split(tab[i], ' ');
+        if (_strlen(sc[0]) == 1 && sc[0][0] == 'A' && sc[0][1] == '\0')
+            a_count++;
+        else if (_strlen(sc[0]) == 1 && sc[0][0] == 'L' && sc[0][1] == '\0')
+            l_count++;
+        else if (_strlen(sc[0]) == 1 && sc[0][0] == 'C' && sc[0][1] == '\0')
+            c_count++;
+        free_tab(sc);
+    }
+    if (a_count <= 1 && l_count <= 1 && c_count <= 1)
+        return (1);
+    return (0);
+}
+
+int _check_extension(char *filename)
+{
+	int i;
+
+	i = _strlen(filename);
+	if (i < 4)
+		return (1);
+	if (filename[i - 3] == '.' && filename[i - 2] == 'r' && filename[i - 1] == 't')
+		return (1);
+	return (0);
+
+}/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   gnl.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: void_id <void_id@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/30 12:57:09 by achahrou          #+#    #+#             */
+/*   Updated: 2024/06/27 18:48:27 by void_id          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "gnl.h"
+
+int	found_newline(t_list *list)
+{
+	int	i;
+
+	if (list == NULL)
+		return (0);
+	while (list)
+	{
+		i = 0;
+		while (list->content[i] && i < BUFFER_SIZE)
+		{
+			if (list->content[i] == '\n')
+				return (1);
+			++i;
+		}
+		list = list->next;
+	}
+	return (0);
+}
+
+t_list	*find_lst_node(t_list *list)
+{
+	if (list == NULL)
+		return (NULL);
+	while (list->next)
+		list = list->next;
+	return (list);
+}
+
+int	len_to_newline(t_list *list)
+{
+	int	i;
+	int	len;
+
+	if (list == NULL)
+		return (0);
+	len = 0;
+	while (list)
+	{
+		i = 0;
+		while (list->content[i])
+		{
+			if (list->content[i] == '\n')
+				return (len);
+			++len;
+			++i;
+		}
+		list = list->next;
+	}
+	return (len);
+}
+
+void	copy_str(t_list *list, char *str)
+{
+	int	i;
+	int	j;
+
+	if (list == NULL)
+		return ;
+	j = 0;
+	while (list)
+	{
+		i = 0;
+		while (list->content[i])
+		{
+			if (list->content[i] == '\n')
+			{
+				str[j] = '\0';
+				return ;
+			}
+			str[j++] = list->content[i++];
+		}
+		list = list->next;
+	}
+	str[j] = '\0';
+}
+
+void	dealloc(t_list **list, t_list *clean_node, char *buf)
+{
+	t_list	*tmp;
+
+	if (NULL == *list)
+		return ;
+	while (*list)
+	{
+		tmp = (*list)->next;
+		free((*list)->content);
+		free(*list);
+		*list = tmp;
+	}
+	*list = NULL;
+	if (clean_node->content[0])
+		*list = clean_node;
+	else
+	{
+		free(buf);
+		free(clean_node);
+	}
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   gnl_utils.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: void_id <void_id@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/30 11:27:00 by achahrou          #+#    #+#             */
+/*   Updated: 2024/06/27 18:48:35 by void_id          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "gnl.h"
+
+char	*gnl(int fd)
+{
+	static t_list	*list = NULL;
+	char			*next_line;
+
+	if (fd < 0 || BUFFER_SIZE < 0 || read(fd, &next_line, 0) < 0)
+		return (NULL);
+	create_list(&list, fd);
+	if (list == NULL)
+		return (NULL);
+	next_line = get_line(list);
+	polish_list(&list);
+	return (next_line);
+}
+
+void	polish_list(t_list **list)
+{
+	t_list	*last_node;
+	t_list	*clean_node;
+	int		i;
+	int		j;
+	char	*buf;
+
+	buf = malloc(BUFFER_SIZE + 1);
+	clean_node = malloc(sizeof(t_list));
+	if (clean_node == NULL || buf == NULL)
+		return ;
+	last_node = find_lst_node(*list);
+	i = 0;
+	j = 0;
+	while (last_node->content[i] && last_node->content[i] != '\n')
+		++i;
+	while (last_node->content[i] && last_node->content[++i])
+		buf[j++] = last_node->content[i];
+	buf[j] = '\0';
+	clean_node->content = buf;
+	clean_node->next = NULL;
+	dealloc(list, clean_node, buf);
+}
+
+void	create_list(t_list **list, int fd)
+{
+	char	*buf;
+	int		readed;
+
+	while (!found_newline(*list))
+	{
+		buf = malloc(BUFFER_SIZE + 1);
+		if (!buf)
+			return ;
+		readed = read(fd, buf, BUFFER_SIZE);
+		if (!readed)
+		{
+			free(buf);
+			return ;
+		}
+		buf[readed] = '\0';
+		append(list, buf);
+	}
+}
+
+void	append(t_list **list, char *buf)
+{
+	t_list	*lst_node;
+	t_list	*new_node;
+
+	lst_node = find_lst_node(*list);
+	new_node = malloc(sizeof(t_list));
+	if (!new_node)
+		return ;
+	if (*list == NULL)
+		*list = new_node;
+	else
+		lst_node->next = new_node;
+	new_node->content = buf;
+	new_node->next = NULL;
+}
+
+char	*get_line(t_list *list)
+{
+	char	*next_line;
+	int		str_len;
+
+	if (NULL == list)
+		return (NULL);
+	str_len = len_to_newline(list);
+	next_line = malloc(str_len + 1);
+	if (!next_line)
+		return (NULL);
+	copy_str(list, next_line);
+	return (next_line);
+}
+#include "miniRT.h"
+
+double	inter_sphere(t_ray *ray, t_objs *sp)
+{
+	t_sphere	sph;
+
+	sph.oc = vec3_sub(ray->orig, sp->cen);
+	sph.a = vec3_dot(ray->dir, ray->dir);
+	sph.b = 2.0 * vec3_dot(sph.oc, ray->dir);
+	sph.c = vec3_dot(sph.oc, sph.oc) - (sp->p.x / 2.0) * (sp->p.x / 2.0);
+	sph.t = sph.b * sph.b - (4 * sph.a * sph.c);
+	if (sph.t < EPS)
+		return (-1);
+	sph.t1 = (sph.b * (-1.0) - sqrt(sph.t)) / (2.0 * sph.a);
+	sph.t2 = (sph.b * (-1.0) + sqrt(sph.t)) / (2.0 * sph.a);
+	if (sph.t1 * sph.t2 > EPS)
+	{
+		if (sph.t1 > EPS)
+			return (fmin(sph.t1, sph.t2));
+		return (-1);
+	}
+	if (sph.t1 > EPS)
+		return (sph.t1);
+	return (sph.t2);
+}
+
+double	inter_plane(t_ray *ray, t_objs *pl)
+{
+	t_vec3	x;
+	t_vec3	normal;
+	double	t;
+	double	b;
+	double	a;
+
+	normal = vec3_normalize(pl->dir);
+	x = vec3_sub(ray->orig, pl->cen);
+	b = vec3_dot(ray->dir, normal);
+	if (b != 0)
+	{
+		a = vec3_dot(x, normal);
+		t = -a / b;
+		if (t < EPS)
+			return (-1.0);
+		return (t);
+	}
+	return (-1.0);
+}#include "miniRT.h"
+
+int	is_digit(char c)
+{
+	if (c >= '0' && c <= '9')
+		return (1);
+	return (0);
+}
+
+void	*_malloc(size_t size)
+{
+	void	*ptr;
+
+	ptr = malloc(size);
+	if (!ptr)
+		return (NULL);
+	return (ptr);
+}
+
+int	is_digitf(char *s)
+{
+	int i;
+	int dot;
+
+	dot = 0;
+	i = 0;
+	if (s == NULL || *s == '\0')
+		return (0);
+	if (s[i] == '-')
+		i++;
+	if (s[i] == '\0' || s[i] == '.')
+		return (0);
+	while (s[i])
+	{
+		if (s[0] == '.' || s[_strlen(s) - 1] == '.')
+			return (0);
+		if (s[i] == '.')
+			dot++;
+		if ((!is_digit(s[i]) && s[i] != '.') || dot > 1)
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+
+int	is_space(char *s)
+{
+	int i;
+
+	i = 0;
+	while (s[i] == ' ' || s[i] == '\t')
+		i++;
+	if (s[i] == '\0')
+		return (1);
+	return (0);
+}
+
+void	*_memdel(void *ptr)
+{
+	if (ptr)
+	{
+		free(ptr);
+		ptr = NULL;
+	}
+	return (NULL);
+}
+
+int	_strlen(const char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i])
+		i++;
+	return (i);
+}
+
+char	*_strnstr(const char *big, const char *little, size_t len)
+{
+	size_t	i;
+	size_t	j;
+
+	i = 0;
+	j = 0;
+	if (little[i] == '\0')
+		return ((char *)big);
+	while (i < len && big[i])
+	{
+		while ((i + j) < len && big[i + j] == little[j] && big[i + j])
+			j++;
+		if (little[j] == '\0')
+			return ((char *)big + i);
+		j = 0;
+		i++;
+	}
+	return (NULL);
+}
+
+float	_atof(char *str)
+{
+	float	res;
+	float	sign;
+	int		i;
+	float	factor;
+
+	if (!str)
+		return (-1);
+	i = 0;
+	factor = 1.0f;
+	res = 0;
+	sign = 1;
+	if (str[i] == '-')
+	{
+		sign = -1;
+		i++;
+	}
+	while (str[i] >= '0' && str[i] <= '9')
+	{
+		res = res * 10 + str[i] - '0';
+		i++;
+	}
+	if (str[i] == '.')
+	{
+		i++;
+		while (str[i] >= '0' && str[i] <= '9')
+		{
+			factor /= 10.0f;
+			res += (str[i] - '0') * factor;
+			i++;
+		}
+	}
+	return (res * sign);
+}
+#include "miniRT.h"
+
+int	error(const char *msg)
+{
+	write(2, "Error: ", 7);
+	write(2, msg, _strlen(msg));
+	write(2, "\n", 1);
+	return (0);
+}
+
+void print_acl(t_amb *amb, t_light *light, t_cam *cam, t_scene *sc)
+{
+    printf("Ambiant light: %.2f, %.2f, %.2f\n", amb->color.x, amb->color.y, amb->color.z);
+    printf("Ambiant light ratio: %.2f\n", amb->ratio);
+    printf("Light Color: %.2f, %.2f, %.2f\n", light->color.x, light->color.y, light->color.z);
+    printf("Light ratio: %.2f\n", light->intensity);
+    printf("Light position: %.2f, %.2f, %.2f\n", light->origin.x, light->origin.y, light->origin.z);
+    printf("Camera: %.2f, %.2f, %.2f\n", cam->normal.x, cam->normal.y, cam->normal.z);
+    printf("Camera orientation: %.2f, %.2f, %.2f\n", cam->origin.x, cam->origin.y, cam->origin.z);
+    printf("Camera fov: %.2f\n", cam->fov);
+
+    t_objs *objs = sc->objs;
+    while (objs)
+    {
+        printf("Object type: %d\n", objs->type);
+        if (objs->type == 1)
+            printf("Object type: Sphere\n");
+        else if (objs->type == 2)
+            printf("Object type: Plane\n");
+        else if (objs->type == 3)
+        printf("Object type: Cylinder\n");
+        printf("Object position: %.2f, %.2f, %.2f\n", objs->cen.x, objs->cen.y, objs->cen.z);
+        printf("Object direction: %.2f, %.2f, %.2f\n", objs->dir.x, objs->dir.y, objs->dir.z);
+        printf("Object diameter: %.2f\n", objs->p.x);
+        printf("Object height: %.2f\n", objs->p.y);
+        printf("Object color: %.2f, %.2f, %.2f\n", objs->col.x, objs->col.y, objs->col.z);
+
+        objs = objs->next;
+    }
+}
+
+
+int main(int ac, char *av[])
+{
+    t_scene scene = {0};
+    // t_mlx mlx = {0};
+    char **sc;
+
+    if (ac != 2 || !_check_extension(av[1]))
+        return (error("Invalid arguments"));
+    sc = get_scene(av[1]);
+    if (!sc || !alc_num(sc))
+        return (em_free("Invalid scene file", sc, NULL, NULL));
+    if (!selecte(&scene, sc))
+        return (em_free("Invalid scene file", sc, NULL, NULL));
+    if (!select_2(&scene, sc))
+        return (em_free("Invalid scene file", sc, NULL, NULL));
+    print_acl(&scene.amb, &scene.light, &scene.cam, &scene);
+    ft_render(&scene);
+    free_tab(sc);
+}#include "miniRT.h"
+
+void    my_mlx_put_pixel(t_mlx *mlx, int x, int y, int color)
+{
+    char    *dst;
+
+    dst = mlx->addr + (y * mlx->line_len + x * (mlx->bpp / 8));
+    *(unsigned int*)dst = color;
+}#include "miniRT.h"
+
+
+
+void ft_draw(t_scene *sc, t_render *render, t_mlx *mlx)
+{
+    float scale = tan((sc->cam.fov * 0.5) * M_PI / 180);
+    float aspect_ratio = (float)WIDTH / (float)HEIGHT;
+
+    render->y = HEIGHT - 1;
+    while (render->y >= 0)
+    {
+        render->x = WIDTH - 1;
+        while (render->x >= 0)
+        {
+            render->u = (2 * ((float)render->x + 0.5) / WIDTH - 1) * render->cam.aspect_r * scale;
+            render->v = (1 - 2 * ((float)render->y + 0.5) / HEIGHT) * scale;
+            render->ray = ray_primary(&render->cam, render->u, render->v);
+            render->ray_col = ray_color(sc, &render->ray);
+            my_mlx_put_pixel(mlx, render->x, render->y, get_color(render->ray_col));
+
+            render->x--;
+        }
+        render->y--;
+    }
+}
+
+
+void	image_init(t_mlx *mlx)
+{
+	mlx->mlx = mlx_init();
+	mlx->win = mlx_new_window(mlx->mlx, WIDTH, HEIGHT, "miniRT");
+	mlx->img = mlx_new_image(mlx->mlx, WIDTH, HEIGHT);
+	mlx->addr = mlx_get_data_addr(mlx->img, &mlx->bpp, &mlx->line_len, &mlx->endian);
+}
+
+void    ft_render(t_scene *sc)
+{
+	t_render	render;
+	t_mlx		mlx;
+
+	render.cam = set_camera(sc);
+	image_init(&mlx);
+	ft_draw(sc, &render, &mlx);
+	mlx_put_image_to_window(mlx.mlx, mlx.win, mlx.img, 0, 0);
+	mlx_loop(mlx.mlx);
+}#include "miniRT.h"
+
+int	is_spcypl(char **tab, char type, char type2)
+{
+	if (_strlen(tab[0]) == 2 &&
+		(tab[0][0] == type && tab[0][1] == type2)\
+		&& tab[0][2] == '\0')
+		return (1);
+	return (0);
+}
+
+int select_2(t_scene *sc, char **tab)
+{
+    int     i;
+    char    **s;
+
+    i = -1;
+    while (tab[++i])
+    {
+        s = _split(tab[i], ' ');
+        if (is_spcypl(s, 's', 'p'))
+        {
+            if (!fill_sphere(sc, tab[i]))
+                return (double_free(s, NULL));
+        }
+        if (is_spcypl(s, 'p', 'l'))
+        {
+            if (!fill_plane(sc, tab[i]))
+                return (double_free(s, NULL));
+        }
+        if (is_spcypl(s, 'c', 'y'))
+        {
+            if (!fill_cylender(sc, tab[i]))
+                return (double_free(s, NULL));
+        }
+        free_tab(s);
+    }
+    return (1);
+}
+#include "miniRT.h"
+
+int	is_acl(char **tab, char type)
+{
+	if (_strlen(tab[0]) == 1 && tab[0][0] == type && tab[0][1] == '\0')
+		return (1);
+	return (0);
+}
+
+int	not_type(char *line)
+{
+	if (_strlen(line) == 1 && line[0] == 'A' && line[1] == '\0')
+		return (1);
+	if (_strlen(line) == 1 && line[0] == 'C' && line[1] == '\0')
+		return (1);
+	if (_strlen(line) == 1 && line[0] == 'L' && line[1] == '\0')
+		return (1);
+	if (_strlen(line) == 2 && line[0] == 's' && line[1] == 'p'\
+		&& line[2] == '\0')
+		return (1);
+	if (_strlen(line) == 2 && line[0] == 'p' && line[1] == 'l'\
+		&& line[2] == '\0')
+		return (1);
+	if (_strlen(line) == 2 && line[0] == 'c' && line[1] == 'y'\
+		&& line[2] == '\0')
+		return (1);
+	return (0);
+}
+
+int	select_a(t_scene *scene, char **tab)
+{
+	int	i;
+	char	**sc;
+
+	i = -1;
+	while (tab[++i])
+	{
+		sc = _split(tab[i], ' ');
+		if (!not_type(sc[0]))
+			return (double_free(sc, NULL));
+		if (is_acl(sc, 'A'))
+		{
+			if (!fill_amb(&scene->amb, tab[i]))
+				return (double_free(sc, NULL));
+		}
+		free_tab(sc);
+	}
+	return (1);
+}
+int	select_l(t_scene *scene, char **tab)
+{
+	int	i;
+	char	**sc;
+
+	i = -1;
+	while (tab[++i])
+	{
+		sc = _split(tab[i], ' ');
+		if (!not_type(sc[0]))
+			return (double_free(sc, NULL));
+		if (is_acl(sc, 'L'))
+		{
+			if(!fill_light(&scene->light, tab[i]))
+				return (double_free(sc, NULL));
+		}
+		free_tab(sc);
+	}
+	return (1);
+}
+
+int	select_c(t_scene *scene, char **tab)
+{
+	int	i;
+	char	**sc;
+
+	i = -1;
+	while (tab[++i])
+	{
+		sc = _split(tab[i], ' ');
+		if (!not_type(sc[0]))
+			return (double_free(sc, NULL));
+		if (is_acl(sc, 'C'))
+		{
+			if(!fill_cam(&scene->cam, tab[i]))
+				return (double_free(sc, NULL));
+		}
+		free_tab(sc);
+	}
+	return (1);
+}
+
+int    selecte(t_scene *scene, char **tab)
+{
+	if (!select_a(scene, tab))
+		return (0);
+	if (!select_c(scene, tab))
+		return (0);
+	if (!select_l(scene, tab))
+		return (0);
+	return (1);
+}
+#include "miniRT.h"
+
+t_objs  *alloc_objs(t_scene *sc)
+{
+	t_objs  *objs;
+
+	objs = malloc(sizeof(t_objs));
+	if (!objs)
+		return (NULL);
+	null_vec(&objs->cen);
+	null_vec(&objs->col);
+	null_vec(&objs->dir);
+	null_vec(&objs->p);
+	objs->next = sc->objs;
+	sc->objs = objs;
+	return (objs);
+}
+
+int	free_4(char **t, char **o, char **n, char **c)
+{
+	if (t)
+		free_tab(t);
+	if (o)
+		free_tab(o);
+	if (n)
+		free_tab(n);
+	if (c)
+		free_tab(c);
+	return (1);
+}
+
+int fill_sphere(t_scene *sc, char *line)
+{
+	char    **tab;
+	char    **ori;
+	char    **col;
+	t_objs  *objs;
+
+	tab = _split(line, ' ');
+	if (tab[4])
+		return em_free(ARG_ERR, tab, NULL, NULL);
+	if (_strlen(tab[0]) != 2 || tab[0][0] != 's' || tab[0][1] != 'p'\
+		|| tab[0][2] != '\0')
+		return em_free("Sphere must start with 's'", tab, NULL, NULL);
+	ori = _split(tab[1], ',');
+	if (!three_check(ori))
+		return em_free(ORIGIN_ERR, tab, ori, NULL);
+	if (!is_digitf(tab[2]) || _atof(tab[2]) <= 0)
+		return em_free(SIZE_ERR, tab, ori, NULL);
+	col = _split(tab[3], ',');
+	if (!three_check(col) || !valide_rgb(make_vec(col)))
+		return em_free(COLOR, tab, ori, col);
+	objs = alloc_objs(sc);
+	objs->type = SP;
+	objs->cen = make_vec(ori);
+	objs->p.x = _atof(tab[2]);
+	objs->col = make_vec(col);
+	return free_4(tab, ori, NULL, col);
+}
+
+int fill_plane(t_scene *sc, char *line)
+{
+	char    **tab;
+	char    **ori;
+	char    **nor;
+	char    **col;
+	t_objs  *objs;
+
+	tab = _split(line, ' ');
+	if (_strlen(tab[0]) != 2 || tab[0][0] != 'p' || \
+		tab[0][1] != 'l' || tab[0][2] != '\0' || tab[4])
+		return em_free(ARG_ERR, tab, NULL, NULL);
+	ori = _split(tab[1], ',');
+	if (!three_check(ori))
+		return em_free(ORIGIN_ERR, tab, ori, NULL);
+	nor = _split(tab[2], ',');
+	if (!three_check(nor) || !in_range(nor))
+		return em_free(DIR_VECTOR, tab, ori, nor);
+	col = _split(tab[3], ',');
+	if (!three_check(col) || !valide_rgb(make_vec(col)))
+		return em_free(COLOR, tab, ori, col);
+	objs = alloc_objs(sc);
+	objs->type = PL;
+	objs->cen = make_vec(ori);
+	objs->dir = make_vec(nor);
+	objs->col = make_vec(col);
+	return free_4(tab, ori, nor, col);
+}
+
+int fill_cylender(t_scene *sc, char *line)
+{
+	char    **tab;
+	char    **ori;
+	char    **nor;
+	char	**col;
+	t_objs  *objs;
+
+	tab = _split(line, ' ');
+	if (_strlen(tab[0]) != 2 || tab[0][0] != 'c' || \
+		tab[0][1] != 'y' || tab[0][2] != '\0' || tab[6])
+		return (em_free(ARG_ERR, tab, NULL, NULL));
+	ori = _split(tab[1], ',');
+	if (!three_check(ori))
+		return (em_free(ORIGIN_ERR, tab, ori, NULL));
+	nor = _split(tab[2], ',');
+	if (!three_check(nor) || !in_range(nor))
+		return (em_free(DIR_VECTOR, tab, ori, nor));
+	if (!is_digitf(tab[3]) || _atof(tab[3]) <= 0 ||\
+		!is_digitf(tab[4]) || _atof(tab[4]) <= 0)
+		return (em_free(SIZE_ERR, tab, ori, nor));
+	col = _split(tab[5], ',');
+	if (!three_check(col) || !valide_rgb(make_vec(col)))
+		return (free_tab(nor), em_free(COLOR, tab, ori, col));
+	objs = alloc_objs(sc);
+	objs->type = CY;
+	objs->cen = make_vec(ori);
+	objs->dir = make_vec(nor);
+	objs->p.x = _atof(tab[3]);
+	objs->p.y = _atof(tab[4]);
+	objs->col = make_vec(col);
+	return (free_4(tab, ori, nor, col));
+}
+#include "miniRT.h"
+
+int	double_free(char **tab, void *ptr)
+{
+	free_tab(tab);
+	_memdel(ptr);
+	return (0);
+}
+
+void	free_tab(char **tab)
+{
+	int	i;
+
+	i = 0;
+	while (tab[i])
+	{
+		_memdel(tab[i]);
+		i++;
+	}
+	_memdel(tab);
+}
+
+int	count_strings(char const *s, char c)
+{
+	int	i;
+	int	str_count;
+
+	i = 0;
+	str_count = 0;
+	if (s[i] == c)
+		str_count--;
+	while (s[i] != '\0')
+	{
+		if (s[i] == c && s[i + 1] != c && s[i + 1] != '\0')
+			str_count++;
+		i++;
+	}
+	str_count++;
+	return (str_count);
+}
+
+char	*malloc_strings(const char *s, char c)
+{
+	char	*word;
+	int		i;
+
+	i = 0;
+	while (s[i] && s[i] != c)
+		i++;
+	word = (char *)malloc(sizeof(char) * (i + 1));
+	if (!word)
+		return (NULL);
+	i = 0;
+	while (s[i] && s[i] != c)
+	{
+		word[i] = s[i];
+		i++;
+	}
+	word[i] = '\0';
+	return (word);
+}
+
+char	**_split(char const *s, char c)
+{
+	int		words;
+	char	**tab;
+	int		i;
+
+	if (!s)
+		return (NULL);
+	words = count_strings(s, c);
+	tab = (char **)malloc(sizeof(char *) * (words + 1));
+	if (!tab)
+		return (NULL);
+	i = 0;
+	while (*s)
+	{
+		while (*s && *s == c)
+			s++;
+		if (*s && *s != c)
+		{
+			tab[i] = malloc_strings(s, c);
+			i++;
+			while (*s && *s != c)
+				s++;
+		}
+	}
+	tab[i] = NULL;
+	return (tab);
+}
+#include "miniRT.h"
+
+t_inter	spher_normal(t_inter hold, t_objs *obj, t_ray *ray)
+{
+	t_inter	inter;
+
+	inter.t = inter_sphere(ray, obj);
+	if (((hold.t > inter.t || hold.t == -1) && inter.t > EPS))
+	{
+		inter.col = obj->col;
+		inter.hit = vec3_add(ray->orig, vec3_scale(ray->dir, inter.t));
+		inter.norm = vec3_normalize(vec3_sub(inter.hit, obj->cen));
+		hold = inter;
+	}
+	return (hold);
+}
+
+t_inter	plane_normal(t_inter hold, t_objs *obj, t_ray *ray)
+{
+	t_inter	inter;
+
+	inter.t = inter_plane(ray, obj);
+	if (((hold.t > inter.t || hold.t == -1) && inter.t > EPS))
+	{
+		inter.col = obj->col;
+		inter.hit = vec3_add(ray->orig, vec3_scale(ray->dir, inter.t));
+		inter.norm = obj->dir;
+		if (vec3_dot(ray->dir, inter.norm) > __DBL_EPSILON__)
+			inter.norm = vec3_normalize(vec3_scale(obj->dir, -1));
+		hold = inter;
+	}
+	return (hold);
+}#include "miniRT.h"
+
+t_vec3 vec3_add(t_vec3 a, t_vec3 b)
+{
+    return (t_vec3){a.x + b.x, a.y + b.y, a.z + b.z};
+}
+
+t_vec3 vec3_sub(t_vec3 a, t_vec3 b)
+{
+    return (t_vec3){a.x - b.x, a.y - b.y, a.z - b.z};
+}
+
+t_vec3 vec3_scale(t_vec3 v, float s)
+{
+    return (t_vec3){v.x * s, v.y * s, v.z * s};
+}
+
+float vec3_dot(t_vec3 a, t_vec3 b)
+{
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+t_vec3 vec3_cross(t_vec3 a, t_vec3 b)
+{
+    return (t_vec3){
+        a.y * b.z - a.z * b.y,
+        a.z * b.x - a.x * b.z,
+        a.x * b.y - a.y * b.x
+    };
+}
+
+float vec3_length(t_vec3 v)
+{
+    return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
+t_vec3 vec3_normalize(t_vec3 v)
+{
+    float mag = vec3_length(v);
+    return vec3_scale(v, 1.0 / mag);
+}
+#include "miniRT.h"
+
+t_inter find_inter(t_scene *sc, t_ray *ray)
+{
+    t_inter hold;
+    t_objs  *obj;
+
+    hold.t = -1;
+    obj = sc->objs;
+    while (obj)
+    {
+        if (obj->type == 1)
+            hold = spher_normal(hold, obj, ray);
+        else if (obj->type == 2)
+            hold = plane_normal(hold, obj,  ray);
+        obj = obj->next;
+    }
+    return (hold);
+}

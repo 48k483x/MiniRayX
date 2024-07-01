@@ -6,7 +6,7 @@
 /*   By: void_id <void_id@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/09 19:12:11 by smia              #+#    #+#             */
-/*   Updated: 2024/06/26 12:38:27 by void_id          ###   ########.fr       */
+/*   Updated: 2024/06/30 13:20:45 by void_id          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,11 @@ t_vec	ray_color(t_CamRay *ray, t_scene *sc)
 		if (is_inside(ray->dir, inter.norm))
 			inter.norm = mult_vec(inter.norm, -1);
 		px_col = calcul_color(sc, inter, amb);
+		printf("px_col: %f %f %f\n", px_col.x, px_col.y, px_col.z);
+		// px_col.x = 255.0;
+        // px_col.y = 0.0;
+        // px_col.z = 0.0;
 		return (px_col);
 	}
-	return (mult_vec(sc->amb.col, sc->amb.ratio));
+	return (t_vec){0, 0, 0};
 }

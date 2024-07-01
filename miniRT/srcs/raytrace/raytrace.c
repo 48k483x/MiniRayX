@@ -8,6 +8,25 @@ void    my_mlx_pixel_put(t_mlx *mlx, int x, int y, int color)
     *(unsigned int *)dst = color;
 }
 
+// void    ft_draw(t_scene *scene, t_mlx *mlx, t_render *render, char **sc)
+// {
+//     render->scale = tan(scene->cam.fov * 0.5 * M_PI / 180.0);
+//     render->x = -1;
+//     while (++render->x < WIDTH)
+//     {
+//         render->y = -1;
+//         while (++render->y < HEIGHT)
+//         {
+//             render->px = 2 * ((double)render->x + 0.5) / ((double)WIDTH - 1)* render->cam.aspratio * render->scale;
+//             render->py = 1 - 2 * ((double)render->y + 0.5) / ((double)HEIGHT - 1) * render->scale;
+//             render->ray = set_ray(&render->cam, render->px, render->py);
+//             render->color = ray_color(scene, &render->ray, sc);
+//             // printf("color: %f %f %f\n", render->color.x, render->color.y, render->color.z);
+//             my_mlx_pixel_put(mlx, render->x, render->y, get_color(render->color));
+//         }
+//     }
+// }
+
 void    ft_draw(t_scene *scene, t_mlx *mlx, t_render *render, char **sc)
 {
     render->scale = tan(scene->cam.fov * 0.5 * M_PI / 180.0);
@@ -20,8 +39,7 @@ void    ft_draw(t_scene *scene, t_mlx *mlx, t_render *render, char **sc)
             render->px = 2 * ((double)render->x + 0.5) / ((double)WIDTH - 1)* render->cam.aspratio * render->scale;
             render->py = 1 - 2 * ((double)render->y + 0.5) / ((double)HEIGHT - 1) * render->scale;
             render->ray = set_ray(&render->cam, render->px, render->py);
-            render->color = ray_color(scene, &render->ray, sc);
-            // printf("color: %f %f %f\n", render->color.x, render->color.y, render->color.z);
+            
             my_mlx_pixel_put(mlx, render->x, render->y, get_color(render->color));
         }
     }

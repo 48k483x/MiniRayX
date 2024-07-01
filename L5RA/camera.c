@@ -14,11 +14,10 @@ t_camera    set_camera(t_scene *sc)
     cam.right = vec3_normalize(vec3_cross(cam.up, cam.forward));
     return (cam);
 }
-
-t_ray   ray_primary(t_camera *cam, double x, double y)
+t_ray ray_primary(t_camera *cam, double x, double y)
 {
-    t_ray   ray;
-    t_vec3  dir;
+    t_ray ray;
+    t_vec3 dir;
 
     dir = vec3_normalize((t_vec3){
         x * cam->right.x + y * cam->up.x + cam->forward.x,

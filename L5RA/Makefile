@@ -19,6 +19,7 @@ SRC =	miniRT.c 		\
 		surface_normal.c\
 		world.c 		\
 		intersection.c 	\
+		shade.c 		\
 	
 
 NAME = miniRT
