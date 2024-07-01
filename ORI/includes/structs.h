@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   structs.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: void_id <void_id@student.42.fr>            +#+  +:+       +#+        */
+/*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 14:14:08 by aouhadou          #+#    #+#             */
-/*   Updated: 2024/06/27 17:59:43 by void_id          ###   ########.fr       */
+/*   Updated: 2024/07/01 14:23:24 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ typedef struct s_light
 	t_vec			src;
 	double			ratio;
 	t_vec			col;
-	struct s_light	*next;
 }	t_light;
 
 typedef struct s_amb
@@ -81,7 +80,7 @@ typedef struct s_scene
 {
 	t_vec	col;
 	t_cam	cam;
-	t_light	*light;
+	t_light	light;
 	t_amb	amb;
 	t_objs	*objs;
 }	t_scene;

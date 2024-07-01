@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   color.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: void_id <void_id@student.42.fr>            +#+  +:+       +#+        */
+/*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/09 19:12:11 by smia              #+#    #+#             */
-/*   Updated: 2024/06/30 13:20:45 by void_id          ###   ########.fr       */
+/*   Updated: 2024/07/01 14:24:22 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ t_vec	calcul_color(t_scene *sc, t_inter inter, t_vec amb)
 	double		d;
 
 	ret = make_vec(0, 0, 0);
-	light = sc->light;
+	light = &sc->light;
 	if (!light)
 		return (amb);
 	if (shade(sc, inter, light))

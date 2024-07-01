@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   allocation.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aouhadou <aouhadou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/24 13:12:52 by smia              #+#    #+#             */
-/*   Updated: 2022/09/25 13:52:20 by aouhadou         ###   ########.fr       */
+/*   Updated: 2024/07/01 14:23:59 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ t_scene	*alloc_scence(void)
 	sc->objs = NULL;
 	sc->amb.count = 0;
 	sc->cam.count = 0;
-	sc->light = NULL;
 	return (sc);
 }
 

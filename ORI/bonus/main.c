@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: void_id <void_id@student.42.fr>            +#+  +:+       +#+        */
+/*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/20 03:35:29 by smia              #+#    #+#             */
-/*   Updated: 2024/06/25 11:55:16 by void_id          ###   ########.fr       */
+/*   Updated: 2024/07/01 14:00:47 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,11 @@ int	main(int ac, char **av)
 	int		fd;
 
 	if (check_file(ac, av))
-		ft_err("wrong args : Please try enter filename.rt");
+		error("wrong args : Please try enter filename.rt");
 	fd = open(av[1], O_RDONLY);
 	sc = alloc_scence();
 	if (!sc)
-		ft_err("allocation");
+		error("allocation");
 	parse(sc, fd);
 	ft_render(sc);
 	ft_collect(&g_root, g_root);

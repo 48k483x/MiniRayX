@@ -3,53 +3,43 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: void_id <void_id@student.42.fr>            +#+  +:+       +#+        */
+/*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/20 03:35:29 by smia              #+#    #+#             */
-/*   Updated: 2024/06/25 11:48:12 by void_id          ###   ########.fr       */
+/*   Updated: 2024/07/01 14:03:19 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minirt.h"
 t_collector	*g_root;
-int	check_file(int ac, char **av)
-{
-	int	i;
-	int	fd;
 
-	fd = 0;
-	if (ac != 2)
-		return (1);
-	if (!av[1])
-		return (1);
-	i = ft_strlen(av[1]);
-	if (i < 4)
-		return (1);
-	if (av[1][i - 1] == 't' || av[1][i - 2] == 'r' || av[1][i - 3] == '.')
-	{
-		fd = open(av[1], O_RDONLY);
-		if (fd < 0)
-			return (1);
-		close(fd);
-	}
-	else
-		return (1);
+int	error(const char *msg)
+{
+	write(2, "Error: ", 7);
+	write(2, msg, _strlen(msg));
+	write(2, "\n", 1);
 	return (0);
 }
 
 int	main(int ac, char **av)
 {
-	t_scene	*sc;
-	int		fd;
+	t_scene scene = {0};
+    char **sc;
 
-	if (check_file(ac, av))
-		ft_err("wrong args : Please try enter filename.rt");
-	fd = open(av[1], O_RDONLY);
-	sc = alloc_scence();
-	if (!sc)
-		ft_err("allocation");
-	parse(sc, fd);
-	ft_render(sc);
+    if (ac != 2 || !_check_extension(av[1]))
+        return (error("Invalid arguments"));
+    sc = get_scene(av[1]);
+    if (!sc || !alc_num(sc))
+        return (em_free("Invalid scene file", sc, NULL, NULL));
+    if (!selecte(&scene, sc))
+        return (em_free("Invalid scene file", sc, NULL, NULL));
+    if (!select_2(&scene, sc))
+	{
+        return (em_free("Invalid scene file", sc, NULL, NULL));
+		
+	}
+	
+	ft_render(&scene);
 	ft_collect(&g_root, g_root);
 	return (0);
 }

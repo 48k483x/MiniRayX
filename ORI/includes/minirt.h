@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: void_id <void_id@student.42.fr>            +#+  +:+       +#+        */
+/*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/24 13:01:02 by smia              #+#    #+#             */
-/*   Updated: 2024/06/26 10:39:42 by void_id          ###   ########.fr       */
+/*   Updated: 2024/07/01 14:03:24 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,23 +26,80 @@
 # include <stdio.h>
 # include <fcntl.h>
 # include <math.h>
+# include "../mandatory/gnl.h"
 # include "../minilibx-linux/mlx.h"
 # include "structs.h"
 # define M_PI 3.14159265358979323846
 
-// parse
-void		ft_err(char *err);
-int			check_file(int ac, char **av);
-void		parse(t_scene *sc, int fd);
-void		parse_line(char *id, char **tockens, t_scene *sc);
-void		parse_plane(t_scene *sc, char **tockens);
-void		parse_cylinder(t_scene *sc, char **tockens);
-void		parse_sphere(t_scene *sc, char **tockens);
-void		parse_light(t_scene *sc, char **tockens);
-void		parse_camera(t_scene *sc, char **tockens);
-void		parse_ambient(t_scene *sc, char **tockens);
-void		parse_cone(t_scene *sc, char **tockens);
-void		parse_triangle(t_scene *sc, char **tockens);
+# define DOTRT_ERR "Error\nThe scene file must have a .rt extension.\n"
+# define FDNM_ERR "Error\nOne of the normal map file cannot be access.\n"
+
+# define SPACE_POINT 	"must have a point in space"
+# define INTENSITY		"intensity must range from 0 to 1"
+# define SMOOTHNESS		"smoothness must range from 0 to 1"
+# define COLOR			"rgb color components must range from 0 to 255"
+# define SIZE_ERR		"size must be positive"
+# define REFLECTION		"reflection arguments must range from 0 to 1"
+# define TEXTURE		"texture must be either checkers or a bump map"
+# define DIR_VECTOR		"direction vector components must range from -1 to 1"
+# define FOV_ERR		"FOV must range from 0 to 180"
+# define ST_ERR			"stars option can't be implemented"
+# define RADIUS			"radius and height must be positive"
+# define ORIGIN_ERR		"origin must have 3 coordinates"
+# define ARG_ERR		"Invalid number of arguments"
+
+
+// ERROR FUNCTIONS
+int     error(const char *msg);
+
+// LIBFT FUNCTIONS
+int     is_digit(char c);
+void    *_malloc(size_t size);
+int     is_digitf(char *s);
+int     is_space(char *s);
+void    *_memdel(void *ptr);
+int     _strlen(const char *s);
+char    *_strnstr(const char *big, const char *little, size_t len);
+float   _atof(char *str);
+
+// GET SCENE
+char	**add_to_map(char **scene, char *new_line);
+char	**get_scene(char *filename);
+int		alc_num(char **tab);
+int     _check_extension(char *filename);
+
+// SPLITS FUNCTIONS
+char	**_split(char const *s, char c);
+
+// FREE FUNCTIONS
+void	free_tab(char **tab);
+int     double_free(char **tab, void *ptr);
+
+// FILL ACL FUNCTIONS
+int     fill_amb(t_amb *amb, char *line);
+int     fill_cam(t_cam *cam, char *line);
+int     fill_light(t_light *light, char *line);
+int		three_check(char **tab);
+
+// FILL_OBJECTS FUNCTIONS
+int     fill_sphere(t_scene *sc, char *line);
+int     fill_plane(t_scene *sc, char *line);
+int		fill_cylender(t_scene *sc, char *line);
+
+
+// SELECT FUNCTIONS
+int     select_a(t_scene *scene, char **tab);
+int     select_c(t_scene *scene, char **tab);
+int     select_l(t_scene *scene, char **tab);
+int		selecte(t_scene *scene, char **tab);
+int		is_acl(char **tab, char c);
+int		not_type(char *type);
+int		em_free(char *msg, char **ori, char **nor, char **tab);
+
+// SELECT_2 FUNCTIONS
+int     is_spcypl(char **tab, char type, char type2);
+int     select_2(t_scene *sc, char **tab);
+
 
 // allocation
 t_scene		*alloc_scence(void);

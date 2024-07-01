@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aouhadou <aouhadou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/20 03:22:01 by smia              #+#    #+#             */
-/*   Updated: 2022/09/25 14:07:06 by aouhadou         ###   ########.fr       */
+/*   Updated: 2024/07/01 14:00:47 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,12 @@ t_vec	get_color(char *s)
 
 	params = ft_split(s, ',');
 	if (!params || !params[1] || !params[2] || params[3])
-		ft_err("invalid color!");
+		error("invalid color!");
 	cord = (t_vec){ft_atoi(params[0]), ft_atoi(params[1]), ft_atoi(params[2])};
 	if (cord.x > 255 || cord.y > 255 || cord.z > 255)
-		ft_err("invalid color");
+		error("invalid color");
 	if (cord.x < 0 || cord.y < 0 || cord.z < 0)
-		ft_err("invalid color");
+		error("invalid color");
 	free_split(params);
 	return (cord);
 }
@@ -36,7 +36,7 @@ t_vec	get_vec(char *s)
 
 	params = ft_split(s, ',');
 	if (!params || !params[1] || !params[2] || params[3])
-		ft_err("invalid coordinates");
+		error("invalid coordinates");
 	cord = make_vec(ft_atod(params[0]), ft_atod(params[1]), ft_atod(params[2]));
 	free_split(params);
 	return (cord);
@@ -59,7 +59,7 @@ void	parse_line(char *id, char **tockens, t_scene *sc)
 	else if (id[0] == 'c' && id[1] == 'o' && id[2] == '\0')
 		parse_cone(sc, tockens);
 	else
-		ft_err("invalid object type");
+		error("invalid object type");
 }
 
 void	parse(t_scene *sc, int fd)

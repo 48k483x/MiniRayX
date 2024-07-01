@@ -3,20 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   allocation.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aouhadou <aouhadou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/24 13:12:52 by smia              #+#    #+#             */
-/*   Updated: 2022/09/25 14:06:27 by aouhadou         ###   ########.fr       */
+/*   Updated: 2024/07/01 14:00:51 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minirt.h"
 
-void	ft_err(char *err)
-{
-	printf("Error : %s\n", err);
-	ft_collect(&g_root, g_root);
-	exit(1);
+// void	error(char *err)
+// {
+// 	printf("Error : %s\n", err);
+// 	ft_collect(&g_root, g_root);
+// 	exit(1);
 }
 
 t_scene	*alloc_scence(void)
