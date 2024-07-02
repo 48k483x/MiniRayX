@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   gnl.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: void_id <void_id@student.42.fr>            +#+  +:+       +#+        */
+/*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 12:57:09 by achahrou          #+#    #+#             */
-/*   Updated: 2024/06/27 18:48:27 by void_id          ###   ########.fr       */
+/*   Updated: 2024/07/02 15:24:46 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "gnl.h"
+#include "../includes/minirt.h"
 
 int	found_newline(t_list *list)
 {
