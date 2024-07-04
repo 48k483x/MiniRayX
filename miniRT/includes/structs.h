@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   structs.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: void_id <void_id@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 14:14:08 by aouhadou          #+#    #+#             */
-/*   Updated: 2024/07/01 14:23:24 by achahrou         ###   ########.fr       */
+/*   Updated: 2024/07/04 22:25:31 by void_id          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,21 +151,5 @@ typedef struct cylinder
 	t_vec	oc;
 	t_vec	normal;
 }	t_cylinder;
-
-typedef struct cone
-{
-	double	a;
-	double	b;
-	double	c;
-	double	delta;
-	double	t;
-	double	t1;
-	double	t2;
-	double	y0;
-	double	y1;
-	t_vec	x;
-	t_vec	v;
-	double	k;
-}	t_cone_info;
 
 #endif

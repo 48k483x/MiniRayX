@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   color.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: void_id <void_id@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/09 19:12:11 by smia              #+#    #+#             */
-/*   Updated: 2024/07/01 14:24:22 by achahrou         ###   ########.fr       */
+/*   Updated: 2024/07/04 22:27:26 by void_id          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,6 @@ t_vec	ray_color(t_CamRay *ray, t_scene *sc)
 		if (is_inside(ray->dir, inter.norm))
 			inter.norm = mult_vec(inter.norm, -1);
 		px_col = calcul_color(sc, inter, amb);
-		printf("px_col: %f %f %f\n", px_col.x, px_col.y, px_col.z);
-		// px_col.x = 255.0;
-        // px_col.y = 0.0;
-        // px_col.z = 0.0;
 		return (px_col);
 	}
 	return (t_vec){0, 0, 0};

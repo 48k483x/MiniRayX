@@ -1,0 +1,679 @@
+#include "miniRT.h"
+
+int ray_intersect_sphere(t_ray ray, t_sph sphere, t_inter *inter)
+{
+    t_vec3 oc = vec3_sub(ray.origin, sphere.origin);
+    double radius = sphere.diameter / 2.0;
+    double a = vec3_dot(ray.dir, ray.dir);
+    double b = 2.0 * vec3_dot(oc, ray.dir);
+    double c = vec3_dot(oc, oc) - radius * radius;
+    double discriminant = b * b - 4 * a * c;
+    
+    if (discriminant < 0)
+        return 0;
+    
+    double t = (-b - sqrt(discriminant)) / (2.0 * a);
+    if (t < 0)
+    {
+        t = (-b + sqrt(discriminant)) / (2.0 * a);
+        if (t < 0)
+            return 0;
+    }
+    
+    inter->t = t;
+    inter->hit = vec3_add(ray.origin, vec3_scale(ray.dir, t));
+    inter->normal = vec3_normalize(vec3_sub(inter->hit, sphere.origin));
+    inter->color = sphere.color;
+    
+    return 1;
+}
+
+int ray_intersect_plane(t_ray ray, t_pla plane, t_inter *inter)
+{
+    double denom = vec3_dot(plane.normal, ray.dir);
+    if (fabs(denom) > 1e-6)
+    {
+        t_vec3 p0l0 = vec3_sub(plane.origin, ray.origin);
+        double t = vec3_dot(p0l0, plane.normal) / denom;
+        if (t >= 0)
+        {
+            inter->t = t;
+            inter->hit = vec3_add(ray.origin, vec3_scale(ray.dir, t));
+            inter->normal = plane.normal;
+            inter->color = plane.color;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int ray_intersect_cylinder(t_ray ray, t_cyl cylinder, t_inter *inter)
+{
+    t_vec3 oc = vec3_sub(ray.origin, cylinder.origin);
+    t_vec3 axis = vec3_normalize(cylinder.normal);
+    double radius = cylinder.diameter / 2.0;
+    
+    double a = vec3_dot(ray.dir, ray.dir) - pow(vec3_dot(ray.dir, axis), 2);
+    double b = 2 * (vec3_dot(ray.dir, oc) - vec3_dot(ray.dir, axis) * vec3_dot(oc, axis));
+    double c = vec3_dot(oc, oc) - pow(vec3_dot(oc, axis), 2) - radius * radius;
+    
+    double discriminant = b * b - 4 * a * c;
+    if (discriminant < 0)
+        return 0;
+    
+    double t1 = (-b - sqrt(discriminant)) / (2 * a);
+    double t2 = (-b + sqrt(discriminant)) / (2 * a);
+    
+    double t;
+    if (t1 > t2)
+    {
+        double temp = t1;
+        t1 = t2;
+        t2 = temp;
+    }
+    
+    t_vec3 p1 = vec3_add(ray.origin, vec3_scale(ray.dir, t1));
+    t_vec3 p2 = vec3_add(ray.origin, vec3_scale(ray.dir, t2));
+    
+    double h1 = vec3_dot(vec3_sub(p1, cylinder.origin), axis);
+    double h2 = vec3_dot(vec3_sub(p2, cylinder.origin), axis);
+    
+    if (h1 >= 0 && h1 <= cylinder.height)
+        t = t1;
+    else if (h2 >= 0 && h2 <= cylinder.height)
+        t = t2;
+    else
+        return 0;
+    
+    inter->t = t;
+    inter->hit = vec3_add(ray.origin, vec3_scale(ray.dir, t));
+    
+    t_vec3 cp = vec3_sub(inter->hit, cylinder.origin);
+    t_vec3 proj = vec3_scale(axis, vec3_dot(cp, axis));
+    inter->normal = vec3_normalize(vec3_sub(cp, proj));
+    
+    inter->color = cylinder.color;
+    
+    return 1;
+}#include "miniRT.h"
+
+int is_in_shadow(t_ray shadow_ray, t_scene *scene, double light_distance)
+{
+    t_inter inter;
+
+    for (t_sph_l *sph = scene->sph; sph != NULL; sph = sph->next)
+    {
+        if (ray_intersect_sphere(shadow_ray, sph->sph, &inter) && inter.t > 0.001 && inter.t < light_distance)
+            return 1;
+    }
+
+    for (t_pla_l *pla = scene->pla; pla != NULL; pla = pla->next)
+    {
+        if (ray_intersect_plane(shadow_ray, pla->pla, &inter) && inter.t > 0.001 && inter.t < light_distance)
+            return 1;
+    }
+
+    for (t_cyl_l *cyl = scene->cyl; cyl != NULL; cyl = cyl->next)
+    {
+        if (ray_intersect_cylinder(shadow_ray, cyl->cyl, &inter) && inter.t > 0.001 && inter.t < light_distance)
+            return 1;
+    }
+
+    return 0;
+}
+
+t_vec3 calculate_lighting(t_light_params *params)
+{
+    t_vec3 normal = vec3_normalize(params->normal);
+    t_vec3 view_dir = vec3_normalize(params->view_dir);
+
+    t_vec3 light_dir = vec3_sub(params->light.origin, params->point);
+    double light_distance = vec3_length(light_dir);
+    light_dir = vec3_normalize(light_dir);
+
+    // Ambient
+    t_vec3 ambient = vec3_scale(params->object_color, params->scene->amb.intensity);
+
+    // Check for shadows
+    t_ray shadow_ray = {params->point, light_dir};
+    if (is_in_shadow(shadow_ray, params->scene, light_distance))
+    {
+        return ambient;
+    }
+
+    // Diffuse
+    double diff = fmax(vec3_dot(normal, light_dir), 0.0);
+    t_vec3 diffuse = vec3_scale(vec3_multiply(params->object_color, params->light.color), diff * params->light.intensity);
+
+    // Specular
+    double specular_strength = 0.5;
+    t_vec3 reflect_dir = vec3_sub(vec3_scale(normal, 2.0 * vec3_dot(light_dir, normal)), light_dir);
+    double spec = pow(fmax(vec3_dot(view_dir, reflect_dir), 0.0), 32);
+    t_vec3 specular = vec3_scale(params->light.color, specular_strength * spec * params->light.intensity);
+
+    // Combine
+    t_vec3 result = vec3_add(vec3_add(ambient, diffuse), specular);
+
+    // Clamp values
+    result.x = fmin(result.x, 1.0);
+    result.y = fmin(result.y, 1.0);
+    result.z = fmin(result.z, 1.0);
+
+    return result;
+}#include "miniRT.h"
+
+int main()
+{
+    t_mlx mlx;
+    t_scene scene;
+
+    mlx.mlx = mlx_init();
+    mlx.width = 800;
+    mlx.height = 600;
+    mlx.win = mlx_new_window(mlx.mlx, mlx.width, mlx.height, "Ray Tracer");
+    mlx.img = mlx_new_image(mlx.mlx, mlx.width, mlx.height);
+    mlx.addr = mlx_get_data_addr(mlx.img, &mlx.bpp, &mlx.line_len, &mlx.endian);
+
+    init_scene(&scene);
+    draw_scene(&mlx, &scene);
+
+    mlx_put_image_to_window(mlx.mlx, mlx.win, mlx.img, 0, 0);
+    
+    Hook_params params = {&mlx, &scene};
+    mlx_hook(mlx.win, 2, 1L << 0, (int (*)(int, void *))handle_keypress, &params);
+    mlx_hook(mlx.win, 17, 0, handle_close, &mlx);
+    mlx_loop(mlx.mlx);
+
+    free_scene(&scene);
+    return 0;
+}#include "miniRT.h"
+
+void init_camera(t_camera *cam, t_cam *scene_cam)
+{
+    cam->origin = scene_cam->origin;
+    cam->forward = vec3_normalize(scene_cam->normal);
+    cam->up = (t_vec3){0, 1, 0};
+    cam->right = vec3_normalize(vec3_cross(cam->forward, cam->up));
+    cam->up = vec3_cross(cam->right, cam->forward);
+}
+
+t_vec3 ray_color(t_ray *ray, t_scene *scene)
+{
+    t_inter closest_inter = {INFINITY, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+    t_inter current_inter;
+
+    for (t_sph_l *sph = scene->sph; sph != NULL; sph = sph->next)
+    {
+        if (ray_intersect_sphere(*ray, sph->sph, &current_inter))
+        {
+            if (current_inter.t < closest_inter.t)
+                closest_inter = current_inter;
+        }
+    }
+
+    for (t_pla_l *pla = scene->pla; pla != NULL; pla = pla->next)
+    {
+        if (ray_intersect_plane(*ray, pla->pla, &current_inter))
+        {
+            if (current_inter.t < closest_inter.t)
+                closest_inter = current_inter;
+        }
+    }
+
+    for (t_cyl_l *cyl = scene->cyl; cyl != NULL; cyl = cyl->next)
+    {
+        if (ray_intersect_cylinder(*ray, cyl->cyl, &current_inter))
+        {
+            if (current_inter.t < closest_inter.t)
+                closest_inter = current_inter;
+        }
+    }
+
+    if (closest_inter.t < INFINITY)
+    {
+        t_light_params params = {
+            closest_inter.hit,
+            closest_inter.normal,
+            vec3_scale(ray->dir, -1),
+            closest_inter.color,
+            scene->light,
+            scene
+        };
+        return calculate_lighting(&params);
+    }
+
+    return (t_vec3){0, 0, 0}; // Background color
+}
+
+void draw_scene(t_mlx *mlx, t_scene *scene)
+{
+    t_render render;
+    init_camera(&render.cam, &scene->cam);
+
+    render.scale = tan(deg_to_rad(scene->cam.fov * 0.5));
+    render.cam.aspratio = (double)mlx->width / (double)mlx->height;
+
+    printf("Drawing scene...\n");
+    printf("Sphere: pos(%.2f, %.2f, %.2f), diameter: %.2f\n", 
+           scene->sph->sph.origin.x, scene->sph->sph.origin.y, scene->sph->sph.origin.z, 
+           scene->sph->sph.diameter);
+    printf("Light: pos(%.2f, %.2f, %.2f), intensity: %.2f\n", 
+           scene->light.origin.x, scene->light.origin.y, scene->light.origin.z, 
+           scene->light.intensity);
+
+    for (render.y = 0; render.y < mlx->height; ++render.y)
+    {
+        for (render.x = 0; render.x < mlx->width; ++render.x)
+        {
+            render.px = (2 * ((render.x + 0.5) / mlx->width) - 1) * render.cam.aspratio * render.scale;
+            render.py = (1 - 2 * ((render.y + 0.5) / mlx->height)) * render.scale;
+
+            render.ray.origin = render.cam.origin;
+            render.ray.dir = vec3_normalize((t_vec3){
+                render.px * render.cam.right.x + render.py * render.cam.up.x + render.cam.forward.x,
+                render.px * render.cam.right.y + render.py * render.cam.up.y + render.cam.forward.y,
+                render.px * render.cam.right.z + render.py * render.cam.up.z + render.cam.forward.z
+            });
+
+            render.color = ray_color(&render.ray, scene);
+            put_pixel(mlx, render.x, render.y, get_color(render.color));
+        }
+    }
+    printf("Scene drawing completed.\n");
+}#include "miniRT.h"
+
+void init_scene(t_scene *scene)
+{
+    scene->amb.intensity = 0.2;
+    scene->amb.color = (t_vec3){1.0, 1.0, 1.0};
+
+    scene->cam.origin = (t_vec3){0, 0, 15};
+    scene->cam.normal = (t_vec3){0, 0, -1};
+    scene->cam.fov = 80;
+
+    scene->light.origin = (t_vec3){-20, 5, 40};
+    scene->light.intensity = 0.6;
+    scene->light.color = (t_vec3){1, 1, 1};
+
+    t_sph_l *sphere = malloc(sizeof(t_sph_l));
+    sphere->sph.origin = (t_vec3){0, 0, 30};
+    sphere->sph.diameter = 5;
+    sphere->sph.color = (t_vec3){1, 0, 0};
+    sphere->next = NULL;
+    scene->sph = sphere;
+
+    t_pla_l *plane1 = malloc(sizeof(t_pla_l));
+    plane1->pla.origin = (t_vec3){0, -2.5, 0};
+    plane1->pla.normal = (t_vec3){0, 1, 0};
+    plane1->pla.color = (t_vec3){0, 1, 1};
+    plane1->next = NULL;
+
+    t_pla_l *plane2 = malloc(sizeof(t_pla_l));
+    plane2->pla.origin = (t_vec3){0, 0, 50};
+    plane2->pla.normal = (t_vec3){0, 0, 1};
+    plane2->pla.color = (t_vec3){0.498, 0.514, 0.737};
+    plane2->next = plane1;
+    scene->pla = plane2;
+
+    scene->cyl = NULL;
+}
+
+void free_scene(t_scene *scene)
+{
+    t_sph_l *sph_tmp;
+    while (scene->sph)
+    {
+        sph_tmp = scene->sph;
+        scene->sph = scene->sph->next;
+        free(sph_tmp);
+    }
+
+    t_pla_l *pla_tmp;
+    while (scene->pla)
+    {
+        pla_tmp = scene->pla;
+        scene->pla = scene->pla->next;
+        free(pla_tmp);
+    }
+
+    t_cyl_l *cyl_tmp;
+    while (scene->cyl)
+    {
+        cyl_tmp = scene->cyl;
+        scene->cyl = scene->cyl->next;
+        free(cyl_tmp);
+    }
+}#include "miniRT.h"
+
+void put_pixel(t_mlx *mlx, int x, int y, int color)
+{
+    char *dst;
+
+    dst = mlx->addr + (y * mlx->line_len + x * (mlx->bpp / 8));
+    *(unsigned int*)dst = color;
+}
+
+int get_color(t_vec3 color)
+{
+    int r = fmin(255, color.x * 255);
+    int g = fmin(255, color.y * 255);
+    int b = fmin(255, color.z * 255);
+    return (r << 16) | (g << 8) | b;
+}
+
+double deg_to_rad(double deg)
+{
+    return deg * M_PI / 180.0;
+}
+
+int handle_keypress(int keycode, Hook_params *params)
+{
+    t_mlx *mlx = params->mlx;
+    t_scene *scene = params->scene;
+
+    if (keycode == ESC_KEY)
+    {
+        mlx_destroy_window(mlx->mlx, mlx->win);
+        exit(0);
+    }
+    // Add other key handling here if needed
+
+    draw_scene(mlx, scene);
+    mlx_put_image_to_window(mlx->mlx, mlx->win, mlx->img, 0, 0);
+    return 0;
+}
+
+int handle_close(t_mlx *mlx)
+{
+    mlx_destroy_window(mlx->mlx, mlx->win);
+    exit(0);
+    return 0;
+}#include "miniRT.h"
+
+t_vec3 vec3_add(t_vec3 a, t_vec3 b) {
+    return (t_vec3){a.x + b.x, a.y + b.y, a.z + b.z};
+}
+
+t_vec3 vec3_sub(t_vec3 a, t_vec3 b) {
+    return (t_vec3){a.x - b.x, a.y - b.y, a.z - b.z};
+}
+
+t_vec3 vec3_scale(t_vec3 v, double s) {
+    return (t_vec3){v.x * s, v.y * s, v.z * s};
+}
+
+double vec3_dot(t_vec3 a, t_vec3 b) {
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+double vec3_length(t_vec3 v) {
+    return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
+t_vec3 vec3_multiply(t_vec3 a, t_vec3 b) {
+    return (t_vec3){a.x * b.x, a.y * b.y, a.z * b.z};
+}
+
+t_vec3 vec3_cross(t_vec3 a, t_vec3 b) {
+    return (t_vec3){
+        a.y * b.z - a.z * b.y,
+        a.z * b.x - a.x * b.z,
+        a.x * b.y - a.y * b.x
+    };
+}
+
+t_vec3 vec3_normalize(t_vec3 v) {
+    double mag = sqrt(vec3_dot(v, v));
+    return vec3_scale(v, 1.0 / mag);
+}#ifndef MINIRT_H
+# define MINIRT_H
+
+#include "mlx.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <math.h>
+
+// Key codes (keep the existing definitions)
+#ifdef __APPLE__
+	#define ESC_KEY 53
+	#define W_KEY 13
+	#define A_KEY 0
+	#define S_KEY 1
+	#define D_KEY 2
+	#define UP 126
+	#define DOWN 125
+	#define LEFT 123
+	#define RIGHT 124
+
+#elif defined(__linux__)
+	#define ESC_KEY 65307
+	#define W_KEY 119
+	#define A_KEY 97
+	#define S_KEY 115
+	#define D_KEY 100
+	#define UP 65362
+	#define DOWN 65364
+	#define LEFT 65361
+	#define RIGHT 65363
+
+#else
+	#error "Unsupported operating system"
+#endif // __APPLE__ or __linux__
+
+
+#define FOV 80
+#define M_PI 3.14159265358979323846
+
+typedef struct s_vec3
+{
+    double x;
+    double y;
+    double z;
+} t_vec3;
+
+typedef struct s_amb
+{
+    double intensity;
+    t_vec3 color;
+} t_amb;
+
+typedef struct s_cam
+{
+    t_vec3 origin;
+    t_vec3 normal;
+    double fov;
+} t_cam;
+
+typedef struct s_light
+{
+    t_vec3 origin;
+    double intensity;
+    t_vec3 color;
+} t_light;
+
+typedef struct s_sph
+{
+    t_vec3 origin;
+    double diameter;
+    t_vec3 color;
+} t_sph;
+
+typedef struct s_pla
+{
+    t_vec3 origin;
+    t_vec3 normal;
+    t_vec3 color;
+} t_pla;
+
+typedef struct s_cyl
+{
+    t_vec3 origin;
+    t_vec3 normal;
+    double diameter;
+    double height;
+    t_vec3 color;
+} t_cyl;
+
+typedef struct s_sph_l
+{
+    t_sph sph;
+    struct s_sph_l *next;
+} t_sph_l;
+
+typedef struct s_pla_l
+{
+    t_pla pla;
+    struct s_pla_l *next;
+} t_pla_l;
+
+typedef struct s_cyl_l
+{
+    t_cyl cyl;
+    struct s_cyl_l *next;
+} t_cyl_l;
+
+typedef struct s_scene
+{
+    t_amb amb;
+    t_cam cam;
+    t_light light;
+    t_sph_l *sph;
+    t_pla_l *pla;
+    t_cyl_l *cyl;
+} t_scene;
+
+typedef struct s_camera
+{
+    t_vec3 origin;
+    t_vec3 up;
+    t_vec3 right;
+    t_vec3 forward;
+    double width;
+    double height;
+    double aspratio;
+    double theeta;
+} t_camera;
+
+typedef struct s_mlx
+{
+    void *mlx;
+    void *win;
+    void *img;
+    char *addr;
+    int bpp;
+    int line_len;
+    int endian;
+    int width;
+    int height;
+} t_mlx;
+
+typedef struct s_ray
+{
+    t_vec3 origin;
+    t_vec3 dir;
+} t_ray;
+
+typedef struct s_render
+{
+    t_camera cam;
+    t_ray ray;
+    t_vec3 color;
+    double px;
+    double py;
+    int x;
+    int y;
+    double scale;
+} t_render;
+
+typedef struct s_inter
+{
+    double t;
+    t_vec3 normal;
+    t_vec3 hit;
+    t_vec3 color;
+} t_inter;
+
+typedef struct s_light_params {
+    t_vec3 point;
+    t_vec3 normal;
+    t_vec3 view_dir;
+    t_vec3 object_color;
+    t_light light;
+    t_scene *scene;
+} t_light_params;
+
+typedef struct s_hook_params {
+    t_mlx *mlx;
+    t_scene *scene;
+} Hook_params;
+
+// Function prototypes
+
+// vector.c
+t_vec3 vec3_add(t_vec3 a, t_vec3 b);
+t_vec3 vec3_sub(t_vec3 a, t_vec3 b);
+t_vec3 vec3_scale(t_vec3 v, double s);
+double vec3_dot(t_vec3 a, t_vec3 b);
+double vec3_length(t_vec3 v);
+t_vec3 vec3_multiply(t_vec3 a, t_vec3 b);
+t_vec3 vec3_cross(t_vec3 a, t_vec3 b);
+t_vec3 vec3_normalize(t_vec3 v);
+
+// intersections.c
+int ray_intersect_sphere(t_ray ray, t_sph sphere, t_inter *inter);
+int ray_intersect_plane(t_ray ray, t_pla plane, t_inter *inter);
+int ray_intersect_cylinder(t_ray ray, t_cyl cylinder, t_inter *inter);
+
+// lighting.c
+int is_in_shadow(t_ray shadow_ray, t_scene *scene, double light_distance);
+t_vec3 calculate_lighting(t_light_params *params);
+
+// scene.c
+void init_scene(t_scene *scene);
+void free_scene(t_scene *scene);
+
+// render.c
+void init_camera(t_camera *cam, t_cam *scene_cam);
+t_vec3 ray_color(t_ray *ray, t_scene *scene);
+void draw_scene(t_mlx *mlx, t_scene *scene);
+
+// utils.c
+void put_pixel(t_mlx *mlx, int x, int y, int color);
+int get_color(t_vec3 color);
+double deg_to_rad(double deg);
+int handle_keypress(int keycode, Hook_params *params);
+int handle_close(t_mlx *mlx);
+
+#endifFLAGS = -Wall -Wextra -Werror
+SRC = main.c vector.c lighting.c intersections.c scene.c render.c utils.c
+NAME = miniRT
+OBJ = $(SRC:.c=.o)
+
+UNAME_S := $(shell uname -s)
+
+ifeq ($(UNAME_S), Linux)
+    OS_FLAGS = -Lminilibx-linux -lmlx -lX11 -lXext -lm
+else ifeq ($(UNAME_S), Darwin)
+    OS_FLAGS = -lmlx -framework OpenGL -framework AppKit
+else
+    $(error Unsupported operating system)
+endif
+
+all: $(NAME)
+
+$(NAME): $(OBJ)
+	@cc $(FLAGS) $(OBJ) $(OS_FLAGS) -o $(NAME)
+
+%.o: %.c
+	@cc $(FLAGS) -c $< -o $@
+
+clean:
+	@rm -rf $(OBJ)
+
+fclean: clean
+	@rm -rf $(NAME)
+
+re: fclean all
+
+.PHONY: all clean fclean re
