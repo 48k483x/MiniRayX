@@ -1,4 +1,4 @@
-FLAGS = -g
+FLAGS = -g -Wall -Wextra -Werror
 
 SRC = 	 mandatory/main.c mandatory/allocation.c  \
          mandatory/split.c mandatory/vector.c mandatory/normal_vector.c \

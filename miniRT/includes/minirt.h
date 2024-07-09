@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   minirt.h                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/05/24 13:01:02 by smia              #+#    #+#             */
-/*   Updated: 2024/07/02 15:25:37 by achahrou         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef MINIRT_H
 # define MINIRT_H
 
@@ -27,7 +15,7 @@
 # include <fcntl.h>
 # include <math.h>
 # include "gnl.h"
-# include "mlx.h"
+# include "../../minilibx-linux/mlx.h"
 # include "structs.h"
 # define M_PI 3.14159265358979323846
 
