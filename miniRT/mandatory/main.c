@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: void_id <void_id@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 12:26:52 by achahrou          #+#    #+#             */
-/*   Updated: 2024/07/10 12:28:54 by achahrou         ###   ########.fr       */
+/*   Updated: 2024/07/10 12:31:39 by void_id          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	main(int ac, char **av)
 	t_scene	scene;
 	char	**sc;
 
-	scene = {0};
+	scene = (t_scene){0};
 	if (ac != 2 || !_check_extension(av[1]))
 		return (error("Invalid arguments"));
 	sc = get_scene(av[1]);
