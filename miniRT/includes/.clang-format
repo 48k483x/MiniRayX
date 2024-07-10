@@ -1,0 +1,10 @@
+BasedOnStyle: LLVM
+IndentWidth: 3
+UseTab: Always
+TabWidth: 3
+BreakBeforeBraces: Allman
+KeepEmptyLinesAtTheStartOfBlocks: false
+AllowShortFunctionsOnASingleLine: false
+
+# Custom formatting for declarations
+DerivePointerAlignment: true

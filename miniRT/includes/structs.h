@@ -3,7 +3,20 @@
 
 /* img info struct */
 
-typedef struct s_data {
+typedef struct s_help
+{
+	char	**col;
+	char	**ori;
+	char	**nor;
+	char	**tab;
+	float	res;
+	float	sign;
+	int		i;
+	float	factor;
+}				t_help;
+
+typedef struct s_data
+{
 	void	*img;
 	char	*addr;
 	int		bits_per_pixel;
@@ -11,7 +24,8 @@ typedef struct s_data {
 	int		endian;
 }	t_img_data;
 
-typedef struct s_vars {
+typedef struct s_vars
+{
 	void	*mlx;
 	void	*win;
 }				t_vars;

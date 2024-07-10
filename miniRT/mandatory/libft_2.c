@@ -1,5 +1,25 @@
 #include "../includes/minirt.h"
 
+int	not_type(char *line)
+{
+	if (_strlen(line) == 1 && line[0] == 'A' && line[1] == '\0')
+		return (1);
+	if (_strlen(line) == 1 && line[0] == 'C' && line[1] == '\0')
+		return (1);
+	if (_strlen(line) == 1 && line[0] == 'L' && line[1] == '\0')
+		return (1);
+	if (_strlen(line) == 2 && line[0] == 's' && line[1] == 'p'\
+		&& line[2] == '\0')
+		return (1);
+	if (_strlen(line) == 2 && line[0] == 'p' && line[1] == 'l'\
+		&& line[2] == '\0')
+		return (1);
+	if (_strlen(line) == 2 && line[0] == 'c' && line[1] == 'y'\
+		&& line[2] == '\0')
+		return (1);
+	return (0);
+}
+
 int	is_digit(char c)
 {
 	if (c >= '0' && c <= '9')
@@ -19,8 +39,8 @@ void	*_malloc(size_t size)
 
 int	is_digitf(char *s)
 {
-	int i;
-	int dot;
+	int	i;
+	int	dot;
 
 	dot = 0;
 	i = 0;
@@ -43,19 +63,6 @@ int	is_digitf(char *s)
 	return (1);
 }
 
-
-int	is_space(char *s)
-{
-	int i;
-
-	i = 0;
-	while (s[i] == ' ' || s[i] == '\t')
-		i++;
-	if (s[i] == '\0')
-		return (1);
-	return (0);
-}
-
 void	*_memdel(void *ptr)
 {
 	if (ptr)
@@ -65,4 +72,3 @@ void	*_memdel(void *ptr)
 	}
 	return (NULL);
 }
-

@@ -1,6 +1,5 @@
 #include "../includes/minirt.h"
 
-
 char	**add_to_map(char **scene, char *new_line)
 {
 	int		i;
@@ -23,9 +22,9 @@ char	**add_to_map(char **scene, char *new_line)
 	return (new_map);
 }
 
-char **get_scene(char *filename)
+char	**get_scene(char *filename)
 {
-	char 	*line;
+	char	*line;
 	char	**scene;
 	int		fd;
 
@@ -40,7 +39,7 @@ char **get_scene(char *filename)
 		{
 			_memdel(line);
 			line = gnl(fd);
-			continue;
+			continue ;
 		}
 		scene = add_to_map(scene, line);
 		line = gnl(fd);
@@ -48,43 +47,44 @@ char **get_scene(char *filename)
 	close(fd);
 	return (scene);
 }
-int    alc_num(char **tab)
+
+int	alc_num(char **tab)
 {
-    char   **sc;
-    int     i;
-    int     a_count;
-    int     l_count;
-    int     c_count;
+	char	**sc;
+	int		i;
+	int		a_count;
+	int		l_count;
+	int		c_count;
 
 	a_count = 0;
 	l_count = 0;
 	c_count = 0;
-    i = -1;
-    while (tab[++i])
-    {
-        sc = _split(tab[i], ' ');
-        if (_strlen(sc[0]) == 1 && sc[0][0] == 'A' && sc[0][1] == '\0')
-            a_count++;
-        else if (_strlen(sc[0]) == 1 && sc[0][0] == 'L' && sc[0][1] == '\0')
-            l_count++;
-        else if (_strlen(sc[0]) == 1 && sc[0][0] == 'C' && sc[0][1] == '\0')
-            c_count++;
-        free_tab(sc);
-    }
-    if (a_count <= 1 && l_count <= 1 && c_count <= 1)
-        return (1);
-    return (0);
+	i = -1;
+	while (tab[++i])
+	{
+		sc = _split(tab[i], ' ');
+		if (_strlen(sc[0]) == 1 && sc[0][0] == 'A' && sc[0][1] == '\0')
+			a_count++;
+		else if (_strlen(sc[0]) == 1 && sc[0][0] == 'L' && sc[0][1] == '\0')
+			l_count++;
+		else if (_strlen(sc[0]) == 1 && sc[0][0] == 'C' && sc[0][1] == '\0')
+			c_count++;
+		free_tab(sc);
+	}
+	if (a_count <= 1 && l_count <= 1 && c_count <= 1)
+		return (1);
+	return (0);
 }
 
-int _check_extension(char *filename)
+int	_check_extension(char *filename)
 {
-	int i;
+	int	i;
 
 	i = _strlen(filename);
 	if (i < 4)
 		return (1);
-	if (filename[i - 3] == '.' && filename[i - 2] == 'r' && filename[i - 1] == 't')
+	if (filename[i - 3] == '.' && filename[i - 2] == 'r' && \
+		filename[i - 1] == 't')
 		return (1);
 	return (0);
-
 }

@@ -8,7 +8,8 @@ SRC = 	 mandatory/main.c mandatory/allocation.c  \
          mandatory/surface_normale.c mandatory/world.c mandatory/libft_2.c \
          mandatory/shading.c mandatory/gnl.c mandatory/gnl_utils.c \
          mandatory/select.c mandatory/select_2.c mandatory/acl.c \
-         mandatory/spcypl.c mandatory/libft.c mandatory/get_scene.c
+         mandatory/spcypl.c mandatory/libft.c mandatory/get_scene.c \
+         mandatory/tools.c
 
 NAME = miniRT
 OBJ = $(SRC:.c=.o)

@@ -1,4 +1,5 @@
 #include "../includes/minirt.h"
+
 t_collector	*g_root;
 
 int	error(const char *msg)
@@ -11,8 +12,8 @@ int	error(const char *msg)
 
 int	main(int ac, char **av)
 {
-	t_scene scene = {0};
-	char **sc;
+	t_scene	scene;
+	char	**sc;
 
 	if (ac != 2 || !_check_extension(av[1]))
 		return (error("Invalid arguments"));
@@ -23,7 +24,6 @@ int	main(int ac, char **av)
 		return (em_free("Invalid scene file", sc, NULL, NULL));
 	if (!(select_2(&scene, sc)))
 		return (em_free("Invalid scene file", sc, NULL, NULL));
-	
 	ft_render(&scene);
 	ft_collect(&g_root, g_root);
 	return (0);

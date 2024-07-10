@@ -65,6 +65,10 @@
     "/home/void_id/.vscode/extensions/continue.continue-0.0.412-linux-x64"
   ],
   "files.associations": {
-    "minirt.h": "c"
+    "*.embeddedhtml": "html",
+    "minirt.h": "c",
+    "structs.h": "c",
+    "mlx.h": "c",
+    "math.h": "c"
   }
 }

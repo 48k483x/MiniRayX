@@ -24,6 +24,14 @@ t_vec	calcul_color(t_scene *sc, t_inter inter, t_vec amb)
 	return (ret);
 }
 
+int	valide_rgb(t_vec color)
+{
+	if (color.x < 0 || color.x > 255 || color.y < 0 \
+			|| color.y > 255 || color.z < 0 || color.z > 255)
+		return (0);
+	return (1);
+}
+
 t_vec	add_coef(t_vec col1, t_vec col2, double ratio)
 {
 	t_vec	ret;
@@ -63,5 +71,5 @@ t_vec	ray_color(t_CamRay *ray, t_scene *sc)
 		px_col = calcul_color(sc, inter, amb);
 		return (px_col);
 	}
-	return (t_vec){0, 0, 0};
+	return ((t_vec){0, 0, 0});
 }

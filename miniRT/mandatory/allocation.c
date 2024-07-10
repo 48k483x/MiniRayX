@@ -21,11 +21,11 @@ t_scene	*alloc_scence(void)
 	return (sc);
 }
 
-t_objs	*alloc_obj(t_scene *sc)
+t_objs	*alloc_objs(t_scene *sc)
 {
 	t_objs	*new_obj;
 
-	new_obj = ft_malloc(&g_root, sizeof(t_objs));
+	new_obj = malloc(sizeof(t_objs));
 	if (!new_obj)
 		return (NULL);
 	null_vec(&(new_obj->col));

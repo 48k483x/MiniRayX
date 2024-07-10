@@ -10,6 +10,18 @@ int	_strlen(const char *s)
 	return (i);
 }
 
+int	is_space(char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i] == ' ' || s[i] == '\t')
+		i++;
+	if (s[i] == '\0')
+		return (1);
+	return (0);
+}
+
 char	*_strnstr(const char *big, const char *little, size_t len)
 {
 	size_t	i;
@@ -31,38 +43,42 @@ char	*_strnstr(const char *big, const char *little, size_t len)
 	return (NULL);
 }
 
+int	init_atof(t_help *h, char *str)
+{
+	if (!str)
+		return (0);
+	h->i = 0;
+	h->factor = 1.0f;
+	h->res = 0;
+	h->sign = 1;
+	return (1);
+}
+
 float	_atof(char *str)
 {
-	float	res;
-	float	sign;
-	int		i;
-	float	factor;
+	t_help	h;
 
-	if (!str)
+	if (!init_atof(&h, str))
 		return (-1);
-	i = 0;
-	factor = 1.0f;
-	res = 0;
-	sign = 1;
-	if (str[i] == '-')
+	if (str[h.i] == '-')
 	{
-		sign = -1;
-		i++;
+		h.sign = -1;
+		h.i++;
 	}
-	while (str[i] >= '0' && str[i] <= '9')
+	while (str[h.i] >= '0' && str[h.i] <= '9')
 	{
-		res = res * 10 + str[i] - '0';
-		i++;
+		h.res = h.res * 10 + str[h.i] - '0';
+		h.i++;
 	}
-	if (str[i] == '.')
+	if (str[h.i] == '.')
 	{
-		i++;
-		while (str[i] >= '0' && str[i] <= '9')
+		h.i++;
+		while (str[h.i] >= '0' && str[h.i] <= '9')
 		{
-			factor /= 10.0f;
-			res += (str[i] - '0') * factor;
-			i++;
+			h.factor /= 10.0f;
+			h.res += (str[h.i] - '0') * h.factor;
+			h.i++;
 		}
 	}
-	return (res * sign);
+	return (h.res * h.sign);
 }
