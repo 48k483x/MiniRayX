@@ -1,7 +1,5 @@
 #include "../includes/minirt.h"
 
-t_collector	*g_root;
-
 int	error(const char *msg)
 {
 	write(2, "Error: ", 7);
@@ -12,7 +10,7 @@ int	error(const char *msg)
 
 int	main(int ac, char **av)
 {
-	t_scene	scene;
+	t_scene	scene = {0};
 	char	**sc;
 
 	if (ac != 2 || !_check_extension(av[1]))
@@ -25,6 +23,13 @@ int	main(int ac, char **av)
 	if (!(select_2(&scene, sc)))
 		return (em_free("Invalid scene file", sc, NULL, NULL));
 	ft_render(&scene);
-	ft_collect(&g_root, g_root);
+	// ft_collect(&g_root, g_root);
+	while (scene.objs)
+	{
+		free(scene.objs);
+		scene.objs = scene.objs->next;
+	}
+
+	free_tab(sc);
 	return (0);
 }

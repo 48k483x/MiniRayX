@@ -89,7 +89,6 @@ t_scene		*alloc_scence(void);
 t_objs		*alloc_objs(t_scene *sc);
 void		ft_collect(t_collector **g_root, t_collector *node);
 void		*ft_malloc(t_collector **g_root, size_t size);
-extern t_collector	*g_root;
 
 // vectors
 void		null_vec(t_vec *v);

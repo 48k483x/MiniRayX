@@ -1,25 +1,25 @@
 #include "../includes/minirt.h"
 
-void	ft_err(char *err)
-{
-	printf("Error : %s\n", err);
-	ft_collect(&g_root, g_root);
-	exit(1);
-}
+// void	ft_err(char *err)
+// {
+// 	printf("Error : %s\n", err);
+// 	ft_collect(&g_root, g_root);
+// 	exit(1);
+// }
 
-t_scene	*alloc_scence(void)
-{
-	t_scene	*sc;
+// t_scene	*alloc_scence(void)
+// {
+// 	t_scene	*sc;
 
-	g_root = NULL;
-	sc = ft_malloc(&g_root, (sizeof(t_scene)));
-	if (!sc)
-		return (NULL);
-	sc->objs = NULL;
-	sc->amb.count = 0;
-	sc->cam.count = 0;
-	return (sc);
-}
+// 	g_root = NULL;
+// 	sc = ft_malloc(&g_root, (sizeof(t_scene)));
+// 	if (!sc)
+// 		return (NULL);
+// 	sc->objs = NULL;
+// 	sc->amb.count = 0;
+// 	sc->cam.count = 0;
+// 	return (sc);
+// }
 
 t_objs	*alloc_objs(t_scene *sc)
 {
