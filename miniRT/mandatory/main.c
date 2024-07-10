@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/10 12:26:52 by achahrou          #+#    #+#             */
+/*   Updated: 2024/07/10 12:28:54 by achahrou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minirt.h"
 
 int	error(const char *msg)
@@ -10,9 +22,10 @@ int	error(const char *msg)
 
 int	main(int ac, char **av)
 {
-	t_scene	scene = {0};
+	t_scene	scene;
 	char	**sc;
 
+	scene = {0};
 	if (ac != 2 || !_check_extension(av[1]))
 		return (error("Invalid arguments"));
 	sc = get_scene(av[1]);
@@ -23,13 +36,11 @@ int	main(int ac, char **av)
 	if (!(select_2(&scene, sc)))
 		return (em_free("Invalid scene file", sc, NULL, NULL));
 	ft_render(&scene);
-	// ft_collect(&g_root, g_root);
 	while (scene.objs)
 	{
 		free(scene.objs);
 		scene.objs = scene.objs->next;
 	}
-
 	free_tab(sc);
 	return (0);
 }
