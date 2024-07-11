@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ray_tracing.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aaamam <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 12:27:00 by achahrou          #+#    #+#             */
-/*   Updated: 2024/07/10 12:27:58 by achahrou         ###   ########.fr       */
+/*   Updated: 2024/07/11 13:34:17 by aaamam           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ void	ft_draw(t_render info, t_scene *sc)
 		info.x = 0;
 		while (info.x < WIDTH)
 		{
-			info.v = (double)info.x * 2 / WIDTH - 1;
-			info.u = (double)info.y * 2 / HEIGHT - 1;
+			info.v = ((double)info.x * 2 / WIDTH - 1)* info.cam.aspect_r;
+			info.u = ((double)info.y * 2 / HEIGHT - 1)/ info.cam.aspect_r;
 			info.ray_ = ray_primary(&info.cam, info.v, info.u);
 			info.ray_col = ray_color(&info.ray_, sc);
 			my_mlx_pixel_put(&info.img, info.x, HEIGHT - 1 - info.y,

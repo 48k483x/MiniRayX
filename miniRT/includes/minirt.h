@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aaamam <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 12:27:38 by achahrou          #+#    #+#             */
-/*   Updated: 2024/07/10 12:27:58 by achahrou         ###   ########.fr       */
+/*   Updated: 2024/07/11 13:44:24 by aaamam           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@
 # include "gnl.h"
 # include "structs.h"
 
-# define WIDTH 800
-# define HEIGHT 800
+# define WIDTH 1920
+# define HEIGHT 1080
 # define EPS 0.000001
 # define CY 1
 # define PL 2
