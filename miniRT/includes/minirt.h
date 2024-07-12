@@ -6,7 +6,7 @@
 /*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 12:27:38 by achahrou          #+#    #+#             */
-/*   Updated: 2024/07/12 06:42:51 by achahrou         ###   ########.fr       */
+/*   Updated: 2024/07/12 07:22:44 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
-# include "../../minilibx-linux/mlx.h"
+# include "../minilibx-linux/mlx.h"
 # include "gnl.h"
 # include "structs.h"
 

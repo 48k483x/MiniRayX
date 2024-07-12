@@ -3,13 +3,13 @@ FLAGS = -g -Wall -Wextra -Werror
 SRC = 	 mandatory/main.c mandatory/allocation.c  \
          mandatory/split.c mandatory/vector.c mandatory/normal_vector.c \
          mandatory/vector2.c mandatory/ray_tracing.c  \
-         mandatory/Garbage_Collector.c mandatory/intersection.c \
+         mandatory/intersection.c mandatory/tools.c  \
          mandatory/mlx_func.c mandatory/camera.c mandatory/color.c \
          mandatory/surface_normale.c mandatory/world.c mandatory/libft_2.c \
          mandatory/shading.c mandatory/gnl.c mandatory/gnl_utils.c \
          mandatory/select.c mandatory/select_2.c mandatory/acl.c \
          mandatory/spcypl.c mandatory/libft.c mandatory/get_scene.c \
-         mandatory/tools.c
+         
 
 NAME = miniRT
 OBJ = $(SRC:.c=.o)
