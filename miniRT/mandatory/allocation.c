@@ -6,32 +6,11 @@
 /*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 12:26:15 by achahrou          #+#    #+#             */
-/*   Updated: 2024/07/10 12:27:58 by achahrou         ###   ########.fr       */
+/*   Updated: 2024/07/12 06:42:40 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minirt.h"
-
-// void	ft_err(char *err)
-// {
-// 	printf("Error : %s\n", err);
-// 	ft_collect(&g_root, g_root);
-// 	exit(1);
-// }
-
-// t_scene	*alloc_scence(void)
-// {
-// 	t_scene	*sc;
-
-// 	g_root = NULL;
-// 	sc = ft_malloc(&g_root, (sizeof(t_scene)));
-// 	if (!sc)
-// 		return (NULL);
-// 	sc->objs = NULL;
-// 	sc->amb.count = 0;
-// 	sc->cam.count = 0;
-// 	return (sc);
-// }
 
 t_objs	*alloc_objs(t_scene *sc)
 {

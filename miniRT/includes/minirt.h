@@ -6,7 +6,7 @@
 /*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 12:27:38 by achahrou          #+#    #+#             */
-/*   Updated: 2024/07/11 14:00:51 by achahrou         ###   ########.fr       */
+/*   Updated: 2024/07/12 06:42:51 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,10 +97,8 @@ int			check_two_nums(char *n1, char *n2);
 int			select_2(t_scene *sc, char **tab);
 
 // allocation
-t_scene		*alloc_scence(void);
 t_objs		*alloc_objs(t_scene *sc);
-void		ft_collect(t_collector **g_root, t_collector *node);
-void		*ft_malloc(t_collector **g_root, size_t size);
+
 
 // vectors
 void		null_vec(t_vec *v);

@@ -6,7 +6,7 @@
 /*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 12:27:41 by achahrou          #+#    #+#             */
-/*   Updated: 2024/07/10 12:27:58 by achahrou         ###   ########.fr       */
+/*   Updated: 2024/07/12 06:42:23 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,12 +98,6 @@ typedef struct s_scene
 	t_amb	amb;
 	t_objs	*objs;
 }	t_scene;
-
-typedef struct collector
-{
-	void				*adr;
-	struct collector	*next;
-}	t_collector;
 
 /* camera */
 typedef struct Camera_Setup
