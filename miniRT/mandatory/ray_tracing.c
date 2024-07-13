@@ -6,7 +6,7 @@
 /*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 12:27:00 by achahrou          #+#    #+#             */
-/*   Updated: 2024/07/13 10:42:43 by achahrou         ###   ########.fr       */
+/*   Updated: 2024/07/13 10:48:25 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void	ft_render(t_scene *sc)
 	ft_draw(sc->info, sc);
 	mlx_put_image_to_window(sc->info.vars.mlx, sc->info.vars.win, \
 									sc->info.img.img, 0, 0);
-	mlx_hook(sc->info.vars.win, 17, 0, red_button, &sc->info.vars);
+	mlx_hook(sc->info.vars.win, 17, 0, red_button, sc);
 	mlx_key_hook(sc->info.vars.win, handle_key, sc);
 	mlx_loop_hook(sc->info.vars.mlx, check_exit, sc);
 	mlx_loop(sc->info.vars.mlx);
