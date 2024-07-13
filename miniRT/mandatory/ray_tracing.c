@@ -6,7 +6,7 @@
 /*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 12:27:00 by achahrou          #+#    #+#             */
-/*   Updated: 2024/07/13 10:34:17 by achahrou         ###   ########.fr       */
+/*   Updated: 2024/07/13 10:42:43 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ void	image_init(t_render	*info)
 	info->img.img = mlx_new_image(info->vars.mlx, WIDTH, HEIGHT);
 	info->img.addr = mlx_get_data_addr(info->img.img, &info->img.bits_per_pixel,
 			&info->img.line_length, &info->img.endian);
-	printf("address of img: %p\n", info->img.img);
 	info->vars.img = info->img;
 }
 
