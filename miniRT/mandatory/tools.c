@@ -6,7 +6,7 @@
 /*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 12:27:16 by achahrou          #+#    #+#             */
-/*   Updated: 2024/07/10 12:27:58 by achahrou         ###   ########.fr       */
+/*   Updated: 2024/07/13 10:36:41 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,4 +39,14 @@ int	check_two_nums(char *n1, char *n2)
 	if (!is_digitf(n1) || _atof(n1) <= 0 || !is_digitf(n2) || _atof(n2) <= 0)
 		return (0);
 	return (1);
+}
+
+int	tab_len(char **tab)
+{
+	int	i;
+
+	i = 0;
+	while (tab[i])
+		i++;
+	return (i);
 }

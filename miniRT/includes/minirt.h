@@ -6,7 +6,7 @@
 /*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 12:27:38 by achahrou          #+#    #+#             */
-/*   Updated: 2024/07/12 07:22:44 by achahrou         ###   ########.fr       */
+/*   Updated: 2024/07/13 10:37:04 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@
 # include "gnl.h"
 # include "structs.h"
 
-# define WIDTH 1920
-# define HEIGHT 1080
+# define WIDTH 800
+# define HEIGHT 800
 # define EPS 0.000001
 # define CY 1
 # define PL 2
@@ -92,13 +92,13 @@ int			em_free(char *msg, char **ori, char **nor, char **tab);
 int			free_4(char **t, char **o, char **n, char **c);
 int			in_range(char **tab);
 int			check_two_nums(char *n1, char *n2);
+int			tab_len(char **tab);
 
 // SELECT_2 FUNCTIONS
 int			select_2(t_scene *sc, char **tab);
 
 // allocation
 t_objs		*alloc_objs(t_scene *sc);
-
 
 // vectors
 void		null_vec(t_vec *v);
@@ -129,8 +129,9 @@ double		inter_plane(t_CamRay *ray, t_objs *pl);
 double		inter_cylinder(t_CamRay *ray, t_objs *cy);
 
 /* mlx funct */
-int			red_button(t_vars *vars);
-int			handle_key(int key, t_vars *vars);
+int			red_button(t_scene *sc);
+int			handle_key(int key, t_scene *sc);
+int			check_exit(t_scene *sc);
 void		my_mlx_pixel_put(t_img_data *data, int x, int y, int color);
 
 // color

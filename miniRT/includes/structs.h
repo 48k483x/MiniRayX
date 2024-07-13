@@ -6,7 +6,7 @@
 /*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 12:27:41 by achahrou          #+#    #+#             */
-/*   Updated: 2024/07/12 06:42:23 by achahrou         ###   ########.fr       */
+/*   Updated: 2024/07/13 10:38:46 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,9 @@ typedef struct s_data
 
 typedef struct s_vars
 {
-	void	*mlx;
-	void	*win;
+	void		*mlx;
+	void		*win;
+	t_img_data	img;
 }				t_vars;
 
 typedef struct s_vec
@@ -90,15 +91,6 @@ typedef struct s_objs
 	struct s_objs	*next;
 }	t_objs;
 
-typedef struct s_scene
-{
-	t_vec	col;
-	t_cam	cam;
-	t_light	light;
-	t_amb	amb;
-	t_objs	*objs;
-}	t_scene;
-
 /* camera */
 typedef struct Camera_Setup
 {
@@ -131,6 +123,17 @@ typedef struct render
 	t_CamRay	ray_;
 	t_vec		ray_col;
 }	t_render;
+
+typedef struct s_scene
+{
+	int			exit;
+	t_vec		col;
+	t_cam		cam;
+	t_light		light;
+	t_amb		amb;
+	t_render	info;
+	t_objs		*objs;
+}	t_scene;
 
 // Intersection 
 

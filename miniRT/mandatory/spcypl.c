@@ -6,7 +6,7 @@
 /*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 12:27:09 by achahrou          #+#    #+#             */
-/*   Updated: 2024/07/10 12:27:58 by achahrou         ###   ########.fr       */
+/*   Updated: 2024/07/13 10:36:31 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	fill_sphere(t_scene *sc, char *line)
 	t_objs	*objs;
 
 	tab = _split(line, ' ');
-	if (tab[4])
+	if (tab && tab_len(tab) != 4)
 		return (em_free(ARG_ERR, tab, NULL, NULL));
 	if (_strlen(tab[0]) != 2 || tab[0][0] != 's' || tab[0][1] != 'p'\
 		|| tab[0][2] != '\0')
@@ -60,7 +60,8 @@ int	fill_plane(t_scene *sc, char *line)
 	t_objs	*objs;
 
 	tab = _split(line, ' ');
-	if (_strlen(tab[0]) != 2 || tab[0][0] != 'p' || \
+	if ((tab && tab_len(tab) != 4) || \
+		_strlen(tab[0]) != 2 || tab[0][0] != 'p' || \
 		tab[0][1] != 'l' || tab[0][2] != '\0' || tab[4])
 		return (em_free(ARG_ERR, tab, NULL, NULL));
 	ori = _split(tab[1], ',');
@@ -72,7 +73,7 @@ int	fill_plane(t_scene *sc, char *line)
 	col = _split(tab[3], ',');
 	if (!three_check(col) || \
 		!valide_rgb(make_vec(_atof(col[0]), _atof(col[1]), _atof(col[2]))))
-		return (em_free(COLOR, tab, ori, col));
+		return (free_tab(nor), em_free(COLOR, tab, ori, col));
 	objs = alloc_objs(sc);
 	objs->type = PL;
 	init_objs(objs, col, ori, nor);
@@ -85,8 +86,8 @@ int	fill_cylender(t_scene *sc, char *line)
 	t_help	h;
 
 	h.tab = _split(line, ' ');
-	if (_strlen(h.tab[0]) != 2 || h.tab[0][0] != 'c' || \
-		h.tab[0][1] != 'y' || h.tab[0][2] != '\0' || h.tab[6])
+	if ((h.tab && tab_len(h.tab) != 6) || _strlen(h.tab[0]) != 2 \
+		|| h.tab[0][0] != 'c' || h.tab[0][1] != 'y' || h.tab[0][2] != '\0')
 		return (em_free(ARG_ERR, h.tab, NULL, NULL));
 	h.ori = _split(h.tab[1], ',');
 	if (!three_check(h.ori))

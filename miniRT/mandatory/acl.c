@@ -6,7 +6,7 @@
 /*   By: achahrou <achahrou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 12:26:06 by achahrou          #+#    #+#             */
-/*   Updated: 2024/07/10 12:27:58 by achahrou         ###   ########.fr       */
+/*   Updated: 2024/07/13 10:21:51 by achahrou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	fill_amb(t_amb *amb, char *line)
 	int		color;
 
 	tab = _split(line, ' ');
-	if (tab[3])
+	if (tab && tab_len(tab) != 3)
 	{
 		return (em_free(ARG_ERR, tab, NULL, NULL));
 	}
@@ -68,7 +68,7 @@ int	fill_cam(t_cam *cam, char *line)
 	char	**nor;
 
 	tab = _split(line, ' ');
-	if (tab[4])
+	if (tab && tab_len(tab) != 4)
 		return (em_free(ARG_ERR, tab, NULL, NULL));
 	if (_strlen(tab[0]) != 1 || tab[0][0] != 'C' || tab[0][1] != '\0')
 		return (em_free("Camera must start with 'C'", tab, NULL, NULL));
@@ -97,7 +97,7 @@ int	fill_light(t_light *light, char *line)
 	int		color;
 
 	tab = _split(line, ' ');
-	if (tab[4])
+	if (tab && tab_len(tab) != 4)
 		return (em_free(ARG_ERR, tab, NULL, NULL));
 	if (_strlen(tab[0]) != 1 || tab[0][0] != 'L' || tab[0][1] != '\0')
 		return (em_free("Light must start with 'L'", tab, NULL, NULL));
