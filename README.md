@@ -61,17 +61,4 @@ Scene files use the .rt extension and follow this format:
 - ESC: Close the window and exit the program
 - Red cross: Close the window and exit the program
 
-## 🛠️ Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/yourusername/miniRayX/issues).
-
-## 📜 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- School 42 for the project idea and guidelines
-- MiniLibX developers for the graphics library
-
 Happy ray tracing! 🌟
