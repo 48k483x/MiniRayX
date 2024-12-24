@@ -1,3 +1,4 @@
+```javascript
 const MiniRT = {
   "description": "A minimalist ray tracer implementation in C",
   "features": ["Ray tracing", "3D Objects", "Lighting", "Shadows"],
