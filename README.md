@@ -101,15 +101,8 @@ const MiniRT = {
 <p>
 
 <img src="https://img.shields.io/badge/Ray%20Tracing-Enabled-brightgreen?style=for-the-badge&logo=image/png;base64,iVBORw0KGgo=" />
-
-<img src="https://img.shields.io/badge/OpenGL-Supported-blue?style=for-the-badge&logo=opengl" />
-
 <img src="https://img.shields.io/badge/Platform-Linux%20|%20macOS-lightgrey?style=for-the-badge" />
-
-<img src="https://img.shields.io/badge/CPU-Ray%20Tracing-red?style=for-the-badge" />
-
 <img src="https://img.shields.io/badge/MinilibX-Powered-blue?style=for-the-badge" />
-
 <img src="https://img.shields.io/badge/Language-C-00599C?style=for-the-badge&logo=c" />
 
 </p>
