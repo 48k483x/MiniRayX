@@ -1,6 +1,4 @@
 # MiniRT
-A minimalist ray tracer implementation in C
-
 ```javascript
 const MiniRT = {
   "description": "A minimalist ray tracer implementation in C",
