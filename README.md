@@ -18,7 +18,7 @@ const MiniRT = {
 
 <td align="center">
 
-<img src="pdf/image1.png" width="400px" alt="Sphere Rendering"/><br/>
+<img src="pdf/image1.png" width="500px" alt="Sphere Rendering"/><br/>
 
 <sub><b>Sphere with Lighting</b></sub>
 
@@ -26,7 +26,7 @@ const MiniRT = {
 
 <td align="center">
 
-<img src="pdf/image2.png" width="400px" alt="Cylinder Scene"/><br/>
+<img src="pdf/image2.png" width="500px" alt="Cylinder Scene"/><br/>
 
 <sub><b>Multiple Objects Scene</b></sub>
 
@@ -38,7 +38,7 @@ const MiniRT = {
 
 <td align="center">
 
-<img src="pdf/image3.png" width="400px" alt="Shadow Demo"/><br/>
+<img src="pdf/image3.png" width="500px" alt="Shadow Demo"/><br/>
 
 <sub><b>Shadow Demonstration</b></sub>
 
@@ -46,7 +46,7 @@ const MiniRT = {
 
 <td align="center">
 
-<img src="pdf/image4.png" width="400px" alt="Complex Scene"/><br/>
+<img src="pdf/image4.png" width="500px" alt="Complex Scene"/><br/>
 
 <sub><b>Complex Scene Rendering</b></sub>
 
@@ -105,6 +105,12 @@ const MiniRT = {
 <img src="https://img.shields.io/badge/OpenGL-Supported-blue?style=for-the-badge&logo=opengl" />
 
 <img src="https://img.shields.io/badge/Platform-Linux%20|%20macOS-lightgrey?style=for-the-badge" />
+
+<img src="https://img.shields.io/badge/CPU-Ray%20Tracing-red?style=for-the-badge" />
+
+<img src="https://img.shields.io/badge/MinilibX-Powered-blue?style=for-the-badge" />
+
+<img src="https://img.shields.io/badge/Language-C-00599C?style=for-the-badge&logo=c" />
 
 </p>
 
