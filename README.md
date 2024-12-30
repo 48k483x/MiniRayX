@@ -4,7 +4,7 @@ const MiniRT = {
   "description": "A minimalist ray tracer implementation in C",
   "features": ["Ray tracing", "3D Objects", "Lighting", "Shadows"],
   "objects": ["Sphere", "Plane", "Cylinder"],
-  "usage": "make && ./miniRT scene.rt",
+  "usage": "cd miniRT && make && ./miniRT scenes/box.rt",
   "dependencies": ["MinilibX", "Math Library"]
 }
 ```
