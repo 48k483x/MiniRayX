@@ -28,7 +28,7 @@ const MiniRT = {
 
 <img src="pdf/image2.png" width="500px" alt="Cylinder Scene"/><br/>
 
-<sub><b>Multiple Objects Scene</b></sub>
+<sub><b>Cylender Object Scene</b></sub>
 
 </td>
 
