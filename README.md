@@ -1,7 +1,7 @@
 # MiniRT
 ```javascript
 const MiniRT = {
-  "description": "A minimalist ray tracer implementation in C",
+  "description": "minimalist ray tracer implementation in C",
   "features": ["Ray tracing", "3D Objects", "Lighting", "Shadows"],
   "objects": ["Sphere", "Plane", "Cylinder"],
   "usage": "cd miniRT && make && ./miniRT scenes/box.rt",
